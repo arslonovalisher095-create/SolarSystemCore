@@ -1,10 +1,11 @@
+import { localized } from '../i18n';
 // Каталог объектов на орбите Земли: реальные элементы GP (CelesTrak / USSPACECOM SSN).
 // Офлайн-снимок лежит в public/data/catalog/earth.json (scripts/build-catalog.py);
 // при наличии сети каталог обновляется из автоматического зеркала CelesTrak на GitHub
 // (raw.githubusercontent.com отдаёт CORS-заголовки, CelesTrak напрямую из браузера — нет).
 
-export const CLASS_NAMES = ['Действующий аппарат', 'Обломок', 'Ступень ракеты', 'Неактивный аппарат', 'Неопознанный'] as const;
-export const CLASS_SHORT = ['АКТ', 'ОБЛ', 'СТУП', 'НЕАКТ', '?'] as const;
+export const CLASS_NAMES = [localized("Действующий аппарат", "Active spacecraft"), localized("Обломок", "Debris"), localized("Ступень ракеты", "Rocket body"), localized("Неактивный аппарат", "Inactive spacecraft"), localized("Неопознанный", "Unidentified")] as const;
+export const CLASS_SHORT = [localized("АКТ", "ACT"), localized("ОБЛ", "DEB"), localized("СТУП", "R/B"), localized("НЕАКТ", "INACT"), '?'] as const;
 export const CLS_ACTIVE = 0, CLS_DEBRIS = 1, CLS_ROCKET = 2, CLS_INACTIVE = 3, CLS_UNKNOWN = 4;
 
 // --- Классификация опасности для запуска ракеты ---
@@ -41,29 +42,29 @@ export function dangerText(o: OrbitalObject): string {
   if (lv === 0) return '';
   const h = Math.round((o.perigeeKm + o.apogeeKm) / 2);
   const reasons: string[] = [];
-  if (o.perigeeKm < 300) reasons.push(`перигей ${Math.round(o.perigeeKm)} км — в зоне активного запуска`);
-  else reasons.push(`перигей ${Math.round(o.perigeeKm)} км — пересекает коридор запуска`);
-  reasons.push(`наклонение ${o.incl.toFixed(1)}° пересекает типовые азимуты запуска`);
-  if (o.cls === CLS_ROCKET) reasons.push('крупный объект (ступень ракеты)');
-  if (Math.abs(o.bstar) > 1e-4) reasons.push('высокое BSTAR — орбита нестабильна');
-  return `Опасен для запуска: ${reasons.join('; ')}.`;
+  if (o.perigeeKm < 300) reasons.push(`${localized("перигей ", "perigee ")}${Math.round(o.perigeeKm)}${localized(" км — в зоне активного запуска", " km — in the active launch zone")}`);
+  else reasons.push(`${localized("перигей ", "perigee ")}${Math.round(o.perigeeKm)}${localized(" км — пересекает коридор запуска", " km — crosses the launch corridor")}`);
+  reasons.push(`${localized("наклонение ", "inclination ")}${o.incl.toFixed(1)}${localized("° пересекает типовые азимуты запуска", "° crosses typical launch azimuths")}`);
+  if (o.cls === CLS_ROCKET) reasons.push(localized("крупный объект (ступень ракеты)", "large object (rocket body)"));
+  if (Math.abs(o.bstar) > 1e-4) reasons.push(localized("высокое BSTAR — орбита нестабильна", "high BSTAR — unstable orbit"));
+  return `${localized("Опасен для запуска: ", "Launch hazard: ")}${reasons.join('; ')}.`;
 }
 
 /** События фрагментации, облака которых есть в каталоге. */
 export const EVENTS: Record<string, { name: string; date: string; text: string }> = {
-  fy1c: { name: 'Fengyun-1C', date: '2007-01-11', text: 'Испытание противоспутникового оружия (КНР): метеоспутник разрушен ракетой SC-19 на высоте ≈865 км. Крупнейшее облако обломков в истории.' },
-  c2251: { name: 'Cosmos 2251', date: '2009-02-10', text: 'Первое случайное столкновение двух спутников: неработающий «Космос-2251» и действующий Iridium 33 над Сибирью, ≈789 км.' },
-  i33: { name: 'Iridium 33', date: '2009-02-10', text: 'Вторая половина того же столкновения с «Космосом-2251».' },
-  c1408: { name: 'Cosmos 1408', date: '2021-11-15', text: 'Испытание ПСО (РФ): спутник разрушен на высоте ≈480 км; экипаж МКС укрывался в кораблях. Почти все обломки уже сгорели.' },
+  fy1c: { name: 'Fengyun-1C', date: '2007-01-11', text: localized("Испытание противоспутникового оружия (КНР): метеоспутник разрушен ракетой SC-19 на высоте ≈865 км. Крупнейшее облако обломков в истории.", "Anti-satellite weapon test (China): a weather satellite was destroyed by an SC-19 missile at ≈865 km. The largest debris cloud in history.") },
+  c2251: { name: 'Cosmos 2251', date: '2009-02-10', text: localized("Первое случайное столкновение двух спутников: неработающий «Космос-2251» и действующий Iridium 33 над Сибирью, ≈789 км.", "The first accidental collision of two satellites: inactive Cosmos 2251 and active Iridium 33 over Siberia, ≈789 km.") },
+  i33: { name: 'Iridium 33', date: '2009-02-10', text: localized("Вторая половина того же столкновения с «Космосом-2251».", "The other half of the same collision with Cosmos 2251.") },
+  c1408: { name: 'Cosmos 1408', date: '2021-11-15', text: localized("Испытание ПСО (РФ): спутник разрушен на высоте ≈480 км; экипаж МКС укрывался в кораблях. Почти все обломки уже сгорели.", "Anti-satellite test (Russia): a satellite was destroyed at ≈480 km; the ISS crew sheltered in spacecraft. Almost all debris has already re-entered.") },
 };
 
 export const TAG_NAMES: Record<string, string> = {
-  crew: 'Пилотируемые станции', starlink: 'Starlink', oneweb: 'OneWeb', kuiper: 'Project Kuiper', qianfan: 'Qianfan (G60)', guowang: 'Guowang',
-  iridium: 'Iridium NEXT', globalstar: 'Globalstar', orbcomm: 'Orbcomm', planet: 'Planet Labs', spire: 'Spire', gnss: 'Навигация (GPS/ГЛОНАСС/Galileo/BeiDou)',
-  geo: 'Геостационар (связь)', comm: 'Связь (прочие)', weather: 'Метеоспутники', earthobs: 'ДЗЗ', sar: 'Поиск и спасание', science: 'Научные',
-  tech: 'Технологические / учебные', cubesat: 'CubeSat', amateur: 'Радиолюбительские', military: 'Военные', relay: 'Группа TDRSS (обслуживаемые и ретрансляторы)',
-  visual: '100 самых ярких', new: 'Запущены за 30 дней', analyst: 'Неопознанные (analyst)', gpz: 'Зона защиты ГСО', decay: 'Скоро сойдут с орбиты',
-  'evt:fy1c': 'Облако Fengyun-1C', 'evt:c2251': 'Облако Cosmos 2251', 'evt:i33': 'Облако Iridium 33', 'evt:c1408': 'Облако Cosmos 1408',
+  crew: localized("Пилотируемые станции", "Crewed stations"), starlink: 'Starlink', oneweb: 'OneWeb', kuiper: 'Project Kuiper', qianfan: 'Qianfan (G60)', guowang: 'Guowang',
+  iridium: 'Iridium NEXT', globalstar: 'Globalstar', orbcomm: 'Orbcomm', planet: 'Planet Labs', spire: 'Spire', gnss: localized("Навигация (GPS/ГЛОНАСС/Galileo/BeiDou)", "Navigation (GPS/GLONASS/Galileo/BeiDou)"),
+  geo: localized("Геостационар (связь)", "Geostationary (communications)"), comm: localized("Связь (прочие)", "Communications (other)"), weather: localized("Метеоспутники", "Weather satellites"), earthobs: localized("ДЗЗ", "Earth observation"), sar: localized("Поиск и спасание", "Search and rescue"), science: localized("Научные", "Science"),
+  tech: localized("Технологические / учебные", "Technology / education"), cubesat: 'CubeSat', amateur: localized("Радиолюбительские", "Amateur radio"), military: localized("Военные", "Military"), relay: localized("Группа TDRSS (обслуживаемые и ретрансляторы)", "TDRSS group (servicing and relay spacecraft)"),
+  visual: localized("100 самых ярких", "100 brightest"), new: localized("Запущены за 30 дней", "Launched in the past 30 days"), analyst: localized("Неопознанные (analyst)", "Unidentified (analyst)"), gpz: localized("Зона защиты ГСО", "GEO protected zone"), decay: localized("Скоро сойдут с орбиты", "Re-entering soon"),
+  'evt:fy1c': localized("Облако Fengyun-1C", "Fengyun-1C cloud"), 'evt:c2251': localized("Облако Cosmos 2251", "Cosmos 2251 cloud"), 'evt:i33': localized("Облако Iridium 33", "Iridium 33 cloud"), 'evt:c1408': localized("Облако Cosmos 1408", "Cosmos 1408 cloud"),
 };
 
 export interface OrbitalObject {
@@ -177,7 +178,7 @@ export async function loadLiveCatalog(onProgress?: (done: number, total: number)
       +o.RA_OF_ASC_NODE, +o.ARG_OF_PERICENTER, +o.MEAN_ANOMALY, +(o.BSTAR ?? 0), +(o.MEAN_MOTION_DOT ?? 0), +(o.MEAN_MOTION_DDOT ?? 0),
       classify(o.OBJECT_NAME, active.has(o.NORAD_CAT_ID), tg), [...tg].sort().join(',')];
   });
-  return build({ source: 'CelesTrak GP (онлайн, зеркало satvisor-data)', generated: new Date().toISOString(), objects: rows }, true);
+  return build({ source: localized("CelesTrak GP (онлайн, зеркало satvisor-data)", "CelesTrak GP (online, satvisor-data mirror)"), generated: new Date().toISOString(), objects: rows }, true);
 }
 
 /** Объект → OMM для satellite.js json2satrec (полный SGP4/SDP4). */

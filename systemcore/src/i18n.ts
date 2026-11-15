@@ -193,17 +193,28 @@ const RU: Partial<typeof EN> = {
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
-let _lang: Lang = (localStorage.getItem(STORAGE_KEY) as Lang) ?? 'en';
+let _lang: Lang = localStorage.getItem(STORAGE_KEY) === 'ru' ? 'ru' : 'en';
+document.documentElement.lang = _lang;
+
+/** Select a reviewed translation before rendering, including canvas labels and static catalog data. */
+export function localized(ru: string, en: string): string {
+  return _lang === 'ru' ? ru : en;
+}
 const _listeners: Array<(lang: Lang) => void> = [];
 
 export function getLang(): Lang { return _lang; }
 
 export function setLang(lang: Lang) {
+  if (lang !== 'en' && lang !== 'ru') return;
+  if (lang === _lang) return;
   _lang = lang;
   localStorage.setItem(STORAGE_KEY, lang);
   document.documentElement.lang = lang;
   applyAll();
   _listeners.forEach((fn) => fn(lang));
+  // Recreate module-level descriptions, canvas labels and hidden panels in the chosen language.
+  // The current route is retained by the browser.
+  location.reload();
 }
 
 export function onLangChange(fn: (lang: Lang) => void) {

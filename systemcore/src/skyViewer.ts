@@ -1,3 +1,4 @@
+import { localized } from './i18n';
 // «Небо SPHEREx»: настоящие изображения всего неба SPHEREx (QR2, NASA/IPAC IRSA → HiPS CDS)
 // и сравнение эпох: как небо выглядело в обзорах DSS2 / 2MASS / AllWISE и как его видит SPHEREx.
 // Это прямой ответ на задачу челленджа: показать снимки SPHEREx и то, как небо меняется со временем
@@ -24,33 +25,33 @@ const ALADIN_JS = 'https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin
 interface Layer { id: string; label: string; src: string; epoch: string; yr: number; band: string }
 // SPHEREx QR2 по детекторам (HiPS построены CDS из данных IRSA; t = MJD 60789–61165, май 2025 – май 2026)
 const SPX: Layer[] = [
-  { id: 'spx-color', label: 'SPHEREx · цвет (D1–D6)', src: 'https://alasky.cds.unistra.fr/SPHEREx/color', epoch: '2025–2026', yr: 2025.9, band: '0,75–5,0 мкм' },
-  { id: 'spx-d1', label: 'SPHEREx · D1', src: 'https://alasky.cds.unistra.fr/SPHEREx/D1', epoch: '2025–2026', yr: 2025.9, band: '0,75–1,1 мкм' },
-  { id: 'spx-d2', label: 'SPHEREx · D2', src: 'https://alasky.cds.unistra.fr/SPHEREx/D2', epoch: '2025–2026', yr: 2025.9, band: '1,1–1,6 мкм' },
-  { id: 'spx-d3', label: 'SPHEREx · D3', src: 'https://alasky.cds.unistra.fr/SPHEREx/D3', epoch: '2025–2026', yr: 2025.9, band: '1,6–2,4 мкм' },
-  { id: 'spx-d4', label: 'SPHEREx · D4', src: 'https://alasky.cds.unistra.fr/SPHEREx/D4', epoch: '2025–2026', yr: 2025.9, band: '2,4–3,8 мкм' },
-  { id: 'spx-d5', label: 'SPHEREx · D5', src: 'https://alasky.cds.unistra.fr/SPHEREx/D5', epoch: '2025–2026', yr: 2025.9, band: '3,8–4,4 мкм' },
-  { id: 'spx-d6', label: 'SPHEREx · D6', src: 'https://alasky.cds.unistra.fr/SPHEREx/D6', epoch: '2025–2026', yr: 2025.9, band: '4,4–5,0 мкм' },
+  { id: 'spx-color', label: localized("SPHEREx · цвет (D1–D6)", "SPHEREx · color (D1–D6)"), src: 'https://alasky.cds.unistra.fr/SPHEREx/color', epoch: '2025–2026', yr: 2025.9, band: localized("0,75–5,0 мкм", "0.75–5.0 μm") },
+  { id: 'spx-d1', label: 'SPHEREx · D1', src: 'https://alasky.cds.unistra.fr/SPHEREx/D1', epoch: '2025–2026', yr: 2025.9, band: localized("0,75–1,1 мкм", "0.75–1.1 μm") },
+  { id: 'spx-d2', label: 'SPHEREx · D2', src: 'https://alasky.cds.unistra.fr/SPHEREx/D2', epoch: '2025–2026', yr: 2025.9, band: localized("1,1–1,6 мкм", "1.1–1.6 μm") },
+  { id: 'spx-d3', label: 'SPHEREx · D3', src: 'https://alasky.cds.unistra.fr/SPHEREx/D3', epoch: '2025–2026', yr: 2025.9, band: localized("1,6–2,4 мкм", "1.6–2.4 μm") },
+  { id: 'spx-d4', label: 'SPHEREx · D4', src: 'https://alasky.cds.unistra.fr/SPHEREx/D4', epoch: '2025–2026', yr: 2025.9, band: localized("2,4–3,8 мкм", "2.4–3.8 μm") },
+  { id: 'spx-d5', label: 'SPHEREx · D5', src: 'https://alasky.cds.unistra.fr/SPHEREx/D5', epoch: '2025–2026', yr: 2025.9, band: localized("3,8–4,4 мкм", "3.8–4.4 μm") },
+  { id: 'spx-d6', label: 'SPHEREx · D6', src: 'https://alasky.cds.unistra.fr/SPHEREx/D6', epoch: '2025–2026', yr: 2025.9, band: localized("4,4–5,0 мкм", "4.4–5.0 μm") },
 ];
 // Обзоры прошлого для сравнения (эпохи — годы наблюдений обзора)
 const PAST: Layer[] = [
-  { id: 'dss2', label: 'DSS2 · видимый свет', src: 'CDS/P/DSS2/color', epoch: '≈1980–1999', yr: 1990, band: '0,4–0,9 мкм' },
-  { id: '2mass', label: '2MASS · ближний ИК', src: 'CDS/P/2MASS/color', epoch: '1997–2001', yr: 1999, band: '1,2–2,2 мкм' },
-  { id: 'wise', label: 'AllWISE · средний ИК', src: 'CDS/P/allWISE/color', epoch: '2010–2011', yr: 2010.5, band: '3,4–22 мкм' },
+  { id: 'dss2', label: localized("DSS2 · видимый свет", "DSS2 · visible light"), src: 'CDS/P/DSS2/color', epoch: '≈1980–1999', yr: 1990, band: localized("0,4–0,9 мкм", "0.4–0.9 μm") },
+  { id: '2mass', label: localized("2MASS · ближний ИК", "2MASS · near infrared"), src: 'CDS/P/2MASS/color', epoch: '1997–2001', yr: 1999, band: localized("1,2–2,2 мкм", "1.2–2.2 μm") },
+  { id: 'wise', label: localized("AllWISE · средний ИК", "AllWISE · mid-infrared"), src: 'CDS/P/allWISE/color', epoch: '2010–2011', yr: 2010.5, band: localized("3,4–22 мкм", "3.4–22 μm") },
 ];
 
 interface Target { name: string; ra: number; dec: number; fov: number; pm?: number; note: string }
 // Координаты J2000; pm — полное собственное движение, ″/год (≈, по каталогу Hipparcos/Gaia)
 const TARGETS: Target[] = [
-  { name: 'Звезда Барнарда', ra: 269.4521, dec: 4.6934, fov: 0.22, pm: 10.39, note: "Самое быстрое собственное движение на небе: звезда уходит на север. Сравните с 2MASS — за четверть века она «переехала» почти на 5′." },
-  { name: 'Звезда Каптейна', ra: 77.919, dec: -45.0185, fov: 0.2, pm: 8.6, note: 'Звезда гало, летит почти навстречу вращению Галактики.' },
-  { name: 'Грумбридж 1830', ra: 178.2448, dec: 37.7186, fov: 0.2, pm: 7.06, note: 'Третье по скорости собственное движение среди ярких звёзд.' },
-  { name: '61 Лебедя', ra: 316.7247, dec: 38.7494, fov: 0.2, pm: 5.28, note: 'Первая звезда с измеренным параллаксом (Бессель, 1838). Видна пара A+B.' },
-  { name: 'Проксима Центавра', ra: 217.4289, dec: -62.6795, fov: 0.15, pm: 3.85, note: 'Ближайшая к Солнцу звезда.' },
-  { name: 'Туманность Ориона', ra: 83.8221, dec: -5.3911, fov: 1.2, note: 'В ИК пыль прозрачнее: SPHEREx видит молодые звёзды, скрытые в видимом свете (DSS2).' },
-  { name: 'Центр Галактики', ra: 266.4168, dec: -29.0078, fov: 3, note: 'Сквозь пылевые облака к Sgr A*: сравните видимый DSS2 и ИК SPHEREx.' },
-  { name: 'Глубокое поле NEP', ra: 270.0, dec: 66.5607, fov: 4, note: 'Северный полюс эклиптики: SPHEREx снимает его на каждом витке — самое глубокое поле миссии.' },
-  { name: 'Туманность Андромеды', ra: 10.6847, dec: 41.269, fov: 3, note: 'Звёздное население M31 в ближнем ИК.' },
+  { name: localized("Звезда Барнарда", "Barnard’s Star"), ra: 269.4521, dec: 4.6934, fov: 0.22, pm: 10.39, note: localized("Самое быстрое собственное движение на небе: звезда уходит на север. Сравните с 2MASS — за четверть века она «переехала» почти на 5′.", "The fastest proper motion in the sky: the star moves northward. Compare with 2MASS — it has moved almost 5′ in a quarter-century.") },
+  { name: localized("Звезда Каптейна", "Kapteyn’s Star"), ra: 77.919, dec: -45.0185, fov: 0.2, pm: 8.6, note: localized("Звезда гало, летит почти навстречу вращению Галактики.", "A halo star moving almost against the Galaxy’s rotation.") },
+  { name: localized("Грумбридж 1830", "Groombridge 1830"), ra: 178.2448, dec: 37.7186, fov: 0.2, pm: 7.06, note: localized("Третье по скорости собственное движение среди ярких звёзд.", "The third-fastest proper motion among bright stars.") },
+  { name: localized("61 Лебедя", "61 Cygni"), ra: 316.7247, dec: 38.7494, fov: 0.2, pm: 5.28, note: localized("Первая звезда с измеренным параллаксом (Бессель, 1838). Видна пара A+B.", "The first star with a measured parallax (Bessel, 1838). The A+B pair is visible.") },
+  { name: localized("Проксима Центавра", "Proxima Centauri"), ra: 217.4289, dec: -62.6795, fov: 0.15, pm: 3.85, note: localized("Ближайшая к Солнцу звезда.", "The closest star to the Sun.") },
+  { name: localized("Туманность Ориона", "Orion Nebula"), ra: 83.8221, dec: -5.3911, fov: 1.2, note: localized("В ИК пыль прозрачнее: SPHEREx видит молодые звёзды, скрытые в видимом свете (DSS2).", "Dust is more transparent in infrared: SPHEREx sees young stars hidden in visible light (DSS2).") },
+  { name: localized("Центр Галактики", "Galactic Center"), ra: 266.4168, dec: -29.0078, fov: 3, note: localized("Сквозь пылевые облака к Sgr A*: сравните видимый DSS2 и ИК SPHEREx.", "Through dust clouds toward Sgr A*: compare visible DSS2 and infrared SPHEREx.") },
+  { name: localized("Глубокое поле NEP", "NEP deep field"), ra: 270.0, dec: 66.5607, fov: 4, note: localized("Северный полюс эклиптики: SPHEREx снимает его на каждом витке — самое глубокое поле миссии.", "North ecliptic pole: SPHEREx images it on every orbit, the mission’s deepest field.") },
+  { name: localized("Туманность Андромеды", "Andromeda Galaxy"), ra: 10.6847, dec: 41.269, fov: 3, note: localized("Звёздное население M31 в ближнем ИК.", "M31’s stellar population in near infrared.") },
 ];
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -62,8 +63,8 @@ function loadAladin(): Promise<ALib> {
     if (w.A) return void w.A.init.then(() => res(w.A!));
     const s = document.createElement('script');
     s.src = ALADIN_JS; s.charset = 'utf-8'; s.async = true;
-    s.onload = () => (w.A ? w.A.init.then(() => res(w.A!), rej) : rej(new Error('Aladin Lite не загрузился')));
-    s.onerror = () => { libPromise = null; rej(new Error('нет доступа к aladin.cds.unistra.fr')); };
+    s.onload = () => (w.A ? w.A.init.then(() => res(w.A!), rej) : rej(new Error(localized("Aladin Lite не загрузился", "Aladin Lite failed to load"))));
+    s.onerror = () => { libPromise = null; rej(new Error(localized("нет доступа к aladin.cds.unistra.fr", "cannot access aladin.cds.unistra.fr"))); };
     document.head.appendChild(s);
   });
   return libPromise;
@@ -76,39 +77,13 @@ export function initSkyViewer(): SkyViewer {
   root.id = 'skyview';
   root.className = 'hidden';
   root.setAttribute('role', 'dialog');
-  root.setAttribute('aria-label', 'Небо SPHEREx: снимки и сравнение эпох');
+  root.setAttribute('aria-label', localized("Небо SPHEREx: снимки и сравнение эпох", "SPHEREx sky: images and epoch comparison"));
   document.body.appendChild(root);
 
   const st = { base: SPX[0], cmp: PAST[1], mode: 'swipe' as 'swipe' | 'blink' | 'single', mix: 0.5, target: TARGETS[0] as Target | null, blinkOn: false };
   let aladin: AladinT | null = null, lib: ALib | null = null, blinkTimer = 0, cmpLayer: { setOpacity?(o: number): void; setAlpha?(o: number): void } | null = null;
 
-  root.innerHTML = `
-    <header class="sv-head">
-      <div><span class="ui-micro">NASA/IPAC IRSA · SPHEREx QR2 · HiPS CDS</span><strong>Небо SPHEREx — как оно меняется со временем</strong></div>
-      <button class="sv-x" data-act="close" aria-label="Закрыть"><svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
-    </header>
-    <div class="sv-main">
-      <aside class="sv-side">
-        <div class="ui-micro">Снимок SPHEREx (2025–2026)</div>
-        <div class="sv-grid" id="sv-base">${SPX.map((l) => `<button data-base="${l.id}" class="${l.id === st.base.id ? 'on' : ''}" title="${l.band}">${l.label.replace('SPHEREx · ', '')}<small>${l.band}</small></button>`).join('')}</div>
-        <div class="ui-micro">Сравнить с прошлым</div>
-        <div class="sv-grid sv-grid1" id="sv-cmp">${PAST.map((l) => `<button data-cmp="${l.id}" class="${l.id === st.cmp.id ? 'on' : ''}">${l.label}<small>${l.epoch} · ${l.band}</small></button>`).join('')}</div>
-        <div class="ui-micro">Режим</div>
-        <div class="sv-modes">
-          <button data-mode="swipe" class="on">Наложение</button><button data-mode="blink">Мерцание</button><button data-mode="single">Только SPHEREx</button>
-        </div>
-        <label class="sv-slider" id="sv-mixrow"><span class="ui-micro">Прошлое</span><input type="range" id="sv-mix" min="0" max="100" value="50"><span class="ui-micro">SPHEREx</span></label>
-        <div class="ui-micro">Цели</div>
-        <div class="sv-targets">${TARGETS.map((t, i) => `<button data-t="${i}" class="${i === 0 ? 'on' : ''}">${esc(t.name)}${t.pm ? `<small>μ ≈ ${t.pm.toFixed(2).replace('.', ',')}″/год</small>` : ''}</button>`).join('')}</div>
-        <form class="sv-goto" id="sv-goto"><input class="ui-input" id="sv-q" placeholder="Объект или RA Dec (напр. M51, 83.82 -5.39)" autocomplete="off"><button class="ui-btn" type="submit">Найти</button></form>
-      </aside>
-      <div class="sv-view">
-        <div id="sv-aladin"></div>
-        <div class="sv-badge" id="sv-badge"></div>
-        <div class="sv-msg hidden" id="sv-msg"></div>
-      </div>
-    </div>
-    <footer class="sv-foot" id="sv-foot"></footer>`;
+  root.innerHTML = `${localized("\n    <header class=\"sv-head\">\n      <div><span class=\"ui-micro\">NASA/IPAC IRSA · SPHEREx QR2 · HiPS CDS</span><strong>Небо SPHEREx — как оно меняется со временем</strong></div>\n      <button class=\"sv-x\" data-act=\"close\" aria-label=\"Закрыть\"><svg viewBox=\"0 0 16 16\"><path d=\"M3 3l10 10M13 3L3 13\"/></svg></button>\n    </header>\n    <div class=\"sv-main\">\n      <aside class=\"sv-side\">\n        <div class=\"ui-micro\">Снимок SPHEREx (2025–2026)</div>\n        <div class=\"sv-grid\" id=\"sv-base\">", "\n    <header class=\"sv-head\">\n      <div><span class=\"ui-micro\">NASA/IPAC IRSA · SPHEREx QR2 · HiPS CDS</span><strong>SPHEREx sky — how it changes over time</strong></div>\n      <button class=\"sv-x\" data-act=\"close\" aria-label=\"Close\"><svg viewBox=\"0 0 16 16\"><path d=\"M3 3l10 10M13 3L3 13\"/></svg></button>\n    </header>\n    <div class=\"sv-main\">\n      <aside class=\"sv-side\">\n        <div class=\"ui-micro\">SPHEREx image (2025–2026)</div>\n        <div class=\"sv-grid\" id=\"sv-base\">")}${SPX.map((l) => `<button data-base="${l.id}" class="${l.id === st.base.id ? 'on' : ''}" title="${l.band}">${l.label.replace('SPHEREx · ', '')}<small>${l.band}</small></button>`).join('')}${localized("</div>\n        <div class=\"ui-micro\">Сравнить с прошлым</div>\n        <div class=\"sv-grid sv-grid1\" id=\"sv-cmp\">", "</div>\n        <div class=\"ui-micro\">Compare with the past</div>\n        <div class=\"sv-grid sv-grid1\" id=\"sv-cmp\">")}${PAST.map((l) => `<button data-cmp="${l.id}" class="${l.id === st.cmp.id ? 'on' : ''}">${l.label}<small>${l.epoch} · ${l.band}</small></button>`).join('')}${localized("</div>\n        <div class=\"ui-micro\">Режим</div>\n        <div class=\"sv-modes\">\n          <button data-mode=\"swipe\" class=\"on\">Наложение</button><button data-mode=\"blink\">Мерцание</button><button data-mode=\"single\">Только SPHEREx</button>\n        </div>\n        <label class=\"sv-slider\" id=\"sv-mixrow\"><span class=\"ui-micro\">Прошлое</span><input type=\"range\" id=\"sv-mix\" min=\"0\" max=\"100\" value=\"50\"><span class=\"ui-micro\">SPHEREx</span></label>\n        <div class=\"ui-micro\">Цели</div>\n        <div class=\"sv-targets\">", "</div>\n        <div class=\"ui-micro\">Mode</div>\n        <div class=\"sv-modes\">\n          <button data-mode=\"swipe\" class=\"on\">Overlay</button><button data-mode=\"blink\">Blink</button><button data-mode=\"single\">SPHEREx only</button>\n        </div>\n        <label class=\"sv-slider\" id=\"sv-mixrow\"><span class=\"ui-micro\">Past</span><input type=\"range\" id=\"sv-mix\" min=\"0\" max=\"100\" value=\"50\"><span class=\"ui-micro\">SPHEREx</span></label>\n        <div class=\"ui-micro\">Objectives</div>\n        <div class=\"sv-targets\">")}${TARGETS.map((t, i) => `<button data-t="${i}" class="${i === 0 ? 'on' : ''}">${esc(t.name)}${t.pm ? `<small>μ ≈ ${t.pm.toFixed(2).replace('.', ',')}${localized("″/год</small>", "″/year</small>")}` : ''}</button>`).join('')}${localized("</div>\n        <form class=\"sv-goto\" id=\"sv-goto\"><input class=\"ui-input\" id=\"sv-q\" placeholder=\"Объект или RA Dec (напр. M51, 83.82 -5.39)\" autocomplete=\"off\"><button class=\"ui-btn\" type=\"submit\">Найти</button></form>\n      </aside>\n      <div class=\"sv-view\">\n        <div id=\"sv-aladin\"></div>\n        <div class=\"sv-badge\" id=\"sv-badge\"></div>\n        <div class=\"sv-msg hidden\" id=\"sv-msg\"></div>\n      </div>\n    </div>\n    <footer class=\"sv-foot\" id=\"sv-foot\"></footer>", "</div>\n        <form class=\"sv-goto\" id=\"sv-goto\"><input class=\"ui-input\" id=\"sv-q\" placeholder=\"Object or RA Dec (e.g. M51, 83.82 -5.39)\" autocomplete=\"off\"><button class=\"ui-btn\" type=\"submit\">Find</button></form>\n      </aside>\n      <div class=\"sv-view\">\n        <div id=\"sv-aladin\"></div>\n        <div class=\"sv-badge\" id=\"sv-badge\"></div>\n        <div class=\"sv-msg hidden\" id=\"sv-msg\"></div>\n      </div>\n    </div>\n    <footer class=\"sv-foot\" id=\"sv-foot\"></footer>")}`;
 
   const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s)!;
 
@@ -148,24 +123,15 @@ export function initSkyViewer(): SkyViewer {
     const dt = st.base.yr - st.cmp.yr;
     const shift = t?.pm ? t.pm * dt : null;
     $('#sv-foot').innerHTML = `
-      <div class="sv-f1">${t ? `<strong>${esc(t.name)}</strong><p>${esc(t.note)}</p>` : '<strong>Свободный поиск</strong><p>Перемещайте и масштабируйте карту; слои сравниваются в той же точке неба.</p>'}</div>
-      <table class="ui-table sv-f2">
-        <tr><td>Разница эпох</td><td class="n">≈ ${dt.toFixed(0)} лет (${st.cmp.epoch} → ${st.base.epoch})</td></tr>
-        ${shift != null ? `<tr><td>Ожидаемое смещение звезды</td><td class="n">≈ ${shift.toFixed(0)}″ = ${(shift / 60).toFixed(1).replace('.', ',')}′ ≈ ${(shift / 6.2).toFixed(0)} пикс. SPHEREx</td></tr>` : ''}
-        <tr><td>Пиксель SPHEREx</td><td class="n">6,2″ · 102 канала 0,75–5,0 мкм</td></tr>
-        <tr><td>Центр поля</td><td class="n" id="sv-coo">—</td></tr>
-      </table>
-      <div class="sv-f3">
-        <a class="ui-btn" href="https://irsa.ipac.caltech.edu/Missions/spherex.html" target="_blank" rel="noopener">Исходные FITS · IRSA</a>
-        <span class="ui-micro">Снимки: NASA/JPL-Caltech/IPAC; HiPS: CDS (Unistra/CNRS); просмотр: Aladin Lite</span>
-      </div>`;
+      <div class="sv-f1">${t ? `<strong>${esc(t.name)}</strong><p>${esc(t.note)}</p>` : localized("<strong>Свободный поиск</strong><p>Перемещайте и масштабируйте карту; слои сравниваются в той же точке неба.</p>", "<strong>Free exploration</strong><p>Pan and zoom the map; layers are compared at the same sky position.</p>")}${localized("</div>\n      <table class=\"ui-table sv-f2\">\n        <tr><td>Разница эпох</td><td class=\"n\">≈ ", "</div>\n      <table class=\"ui-table sv-f2\">\n        <tr><td>Epoch difference</td><td class=\"n\">≈ ")}${dt.toFixed(0)}${localized(" лет (", " years (")}${st.cmp.epoch} → ${st.base.epoch})</td></tr>
+        ${shift != null ? `${localized("<tr><td>Ожидаемое смещение звезды</td><td class=\"n\">≈ ", "<tr><td>Expected stellar displacement</td><td class=\"n\">≈ ")}${shift.toFixed(0)}″ = ${(shift / 60).toFixed(1).replace('.', ',')}′ ≈ ${(shift / 6.2).toFixed(0)}${localized(" пикс. SPHEREx</td></tr>", " SPHEREx pixels</td></tr>")}` : ''}${localized("\n        <tr><td>Пиксель SPHEREx</td><td class=\"n\">6,2″ · 102 канала 0,75–5,0 мкм</td></tr>\n        <tr><td>Центр поля</td><td class=\"n\" id=\"sv-coo\">—</td></tr>\n      </table>\n      <div class=\"sv-f3\">\n        <a class=\"ui-btn\" href=\"https://irsa.ipac.caltech.edu/Missions/spherex.html\" target=\"_blank\" rel=\"noopener\">Исходные FITS · IRSA</a>\n        <span class=\"ui-micro\">Снимки: NASA/JPL-Caltech/IPAC; HiPS: CDS (Unistra/CNRS); просмотр: Aladin Lite</span>\n      </div>", "\n        <tr><td>SPHEREx pixel</td><td class=\"n\">6.2″ · 102 channels, 0.75–5.0 μm</td></tr>\n        <tr><td>Field center</td><td class=\"n\" id=\"sv-coo\">—</td></tr>\n      </table>\n      <div class=\"sv-f3\">\n        <a class=\"ui-btn\" href=\"https://irsa.ipac.caltech.edu/Missions/spherex.html\" target=\"_blank\" rel=\"noopener\">Original FITS · IRSA</a>\n        <span class=\"ui-micro\">Images: NASA/JPL-Caltech/IPAC; HiPS: CDS (Unistra/CNRS); viewer: Aladin Lite</span>\n      </div>")}`;
     updateCoo();
   }
   function updateCoo() {
     if (!aladin) return;
     const [ra, dec] = aladin.getRaDec(), fov = aladin.getFov()[0];
     const el = root.querySelector('#sv-coo');
-    if (el) el.textContent = `RA ${ra.toFixed(4)}° · Dec ${dec >= 0 ? '+' : ''}${dec.toFixed(4)}° · поле ${fov < 1 ? (fov * 60).toFixed(1) + '′' : fov.toFixed(2) + '°'}`;
+    if (el) el.textContent = `RA ${ra.toFixed(4)}° · Dec ${dec >= 0 ? '+' : ''}${dec.toFixed(4)}${localized("° · поле ", "° · field ")}${fov < 1 ? (fov * 60).toFixed(1) + '′' : fov.toFixed(2) + '°'}`;
   }
   function goTarget(t: Target) {
     st.target = t;
@@ -178,7 +144,7 @@ export function initSkyViewer(): SkyViewer {
   async function boot() {
     const msg = $('#sv-msg');
     msg.classList.remove('hidden');
-    msg.textContent = 'Загрузка Aladin Lite и тайлов SPHEREx…';
+    msg.textContent = localized("Загрузка Aladin Lite и тайлов SPHEREx…", "Loading Aladin Lite and SPHEREx tiles…");
     try {
       lib = await loadAladin();
       aladin = lib.aladin('#sv-aladin', {
@@ -192,7 +158,7 @@ export function initSkyViewer(): SkyViewer {
       applyLayers();
       msg.classList.add('hidden');
     } catch (err) {
-      msg.innerHTML = `Не удалось загрузить просмотрщик неба (${esc(String((err as Error).message ?? err))}). Нужен доступ в интернет к aladin.cds.unistra.fr и alasky.cds.unistra.fr.`;
+      msg.innerHTML = `${localized("Не удалось загрузить просмотрщик неба (", "Could not load the sky viewer (")}${esc(String((err as Error).message ?? err))}${localized("). Нужен доступ в интернет к aladin.cds.unistra.fr и alasky.cds.unistra.fr.", "). Internet access to aladin.cds.unistra.fr and alasky.cds.unistra.fr is required.")}`;
     }
   }
 
@@ -215,7 +181,7 @@ export function initSkyViewer(): SkyViewer {
     root.querySelectorAll('[data-t]').forEach((x) => x.classList.remove('on'));
     const m = q.match(/^(-?\d+(?:\.\d+)?)[\s,]+([+-]?\d+(?:\.\d+)?)$/);
     if (m) { aladin.gotoRaDec(+m[1], +m[2]); renderInfo(); return; }
-    aladin.gotoObject(q, { success: () => renderInfo(), error: () => { $<HTMLInputElement>('#sv-q').value = `Не найдено: ${q}`; } });
+    aladin.gotoObject(q, { success: () => renderInfo(), error: () => { $<HTMLInputElement>('#sv-q').value = `${localized("Не найдено: ", "Not found: ")}${q}`; } });
   });
   addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !root.classList.contains('hidden')) ctl.close(); });
 

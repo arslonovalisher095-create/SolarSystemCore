@@ -1,3 +1,4 @@
+import { localized } from './i18n';
 import './spherexLab.css';
 import {
   DEFAULT_SURVEY_BANDS,
@@ -64,11 +65,11 @@ const PASS_DAYS = 182.625;
 const DETECTION_SIGMA = 5;
 
 const KIND_LABEL: Record<SurveySector['kind'] | 'inconclusive', string> = {
-  'planet-x-candidate': 'Кандидат Planet X',
+  'planet-x-candidate': localized("Кандидат Planet X", "Planet X candidate"),
   tno: 'TNO',
-  asteroid: 'Астероид',
-  none: 'Нет движения',
-  inconclusive: 'Неопределён',
+  asteroid: localized("Астероид", "Asteroid"),
+  none: localized("Нет движения", "No motion"),
+  inconclusive: localized("Неопределён", "Uncertain"),
 };
 
 const ICON = {
@@ -154,121 +155,11 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
   const candidates: { n: number; sector: SurveySector; est: DistanceEstimate }[] = [];
   const log: string[] = [];
 
-  panel.setAttribute('aria-label', 'SPHEREx — научная консоль');
+  panel.setAttribute('aria-label', localized("SPHEREx — научная консоль", "SPHEREx — science console"));
   panel.innerHTML = `
     <header class="sxw-head">
       <div class="sxw-id">
-        <span class="ui-micro">SPHEREx · MIDEX-9 · NORAD ${SPHEREX_NORAD} · COSPAR ${SPHEREX_COSPAR}</span>
-        <h2>Научная консоль</h2>
-      </div>
-      <span id="sxw-src" class="sxw-src">TLE</span>
-      <button type="button" id="sxw-close" class="sxw-x" aria-label="Закрыть">${ICON.close}</button>
-    </header>
-    <div class="sxw-status" id="sxw-status">
-      <div><span>UTC</span><b id="st-utc">—</b></div>
-      <div><span>Виток</span><b id="st-orbit">—</b></div>
-      <div><span>Высота</span><b id="st-alt">—</b></div>
-      <div><span>Накл.</span><b id="st-inc">—</b></div>
-      <div><span>Проход</span><b id="st-pass">—</b></div>
-      <div><span>Небо</span><b id="st-sky">—</b></div>
-    </div>
-    <nav class="ui-tabs sxw-tabs" role="tablist" aria-label="Разделы SPHEREx">
-      <button role="tab" data-tab="telemetry" aria-selected="true">Телеметрия</button>
-      <button role="tab" data-tab="spectrum" aria-selected="false">Спектрометр</button>
-      <button role="tab" data-tab="planetx" aria-selected="false">Поиск Planet X</button>
-      <button role="tab" data-tab="mission" aria-selected="false">Миссия</button>
-    </nav>
-
-    <section class="sxw-pane" data-pane="telemetry" role="tabpanel">
-      <h3 class="sxw-h">Орбита · SGP4</h3>
-      <dl class="sxw-kv" id="tel-kv"></dl>
-      <h3 class="sxw-h">Подспутниковая трасса <em>−½ / +1 виток · терминатор</em></h3>
-      <div class="sxw-plot"><canvas id="tel-track"></canvas></div>
-      <h3 class="sxw-h">Обзор неба <em>полное небо каждые 182,6 сут</em></h3>
-      <table class="ui-table sxw-pass" id="tel-pass"></table>
-      <dl class="sxw-kv" id="tel-survey"></dl>
-      <div class="sxw-actions">
-        <button type="button" class="ui-btn primary" id="act-craft">${ICON.target}Подлететь к SPHEREx</button>
-        <button type="button" class="ui-btn" id="act-scope">${ICON.scope}<span>Вид с телескопа</span></button>
-        <button type="button" class="ui-btn" id="act-cone" aria-pressed="false">Конус FOV</button>
-      </div>
-    </section>
-
-    <section class="sxw-pane" data-pane="spectrum" role="tabpanel" hidden>
-      <h3 class="sxw-h">Детекторы <em>щелчок — показать канал на ИК-небе</em></h3>
-      <table class="ui-table sxw-det" id="spec-det"></table>
-      <div class="sxw-row">
-        <button type="button" class="ui-btn" id="act-irsky" aria-pressed="false">ИК-небо</button>
-        <div class="sxw-seg" id="spec-bands" role="group" aria-label="Канал ИК-неба">
-          ${(['color', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6'] as SurveyBandId[]).map((b) => `<button type="button" data-band="${b}">${b === 'color' ? 'RGB' : b}</button>`).join('')}
-        </div>
-      </div>
-      <h3 class="sxw-h">Спектр 102 канала <em>модель цели · F<sub>ν</sub> норм.</em></h3>
-      <div class="sxw-row">
-        <label class="ui-micro" for="spec-target">Цель</label>
-        <select id="spec-target" class="ui-input">${SPECTRAL_TARGETS.map((t) => `<option value="${t.id}">${t.name}</option>`).join('')}</select>
-        <span class="sxw-temp" id="spec-temp"></span>
-      </div>
-      <div class="sxw-plot"><canvas id="spec-canvas" data-testid="spectrum-canvas"></canvas></div>
-      <div class="sxw-readout" id="spec-readout">КАН — · — · λ — мкм · R — · Fν —</div>
-      <div class="sxw-lines" id="spec-lines"></div>
-      <h3 class="sxw-h" id="arch-title">Архив QR2</h3>
-      <table class="ui-table" id="arch-table"></table>
-    </section>
-
-    <section class="sxw-pane" data-pane="planetx" role="tabpanel" hidden>
-      <p class="sxw-disclaimer">Симуляция метода на синтетических секторах: параллакс и шум — реальная физика, изображения — нет.</p>
-      <div class="sxw-row sxw-toolbar">
-        <div class="sxw-seg" id="px-mode" role="group" aria-label="Режим">
-          <button type="button" data-mode="frame">Кадр</button>
-          <button type="button" data-mode="diff" title="Разностное изображение: эпоха n минус эпоха 1">Eₙ−E₁</button>
-        </div>
-        <div class="sxw-seg" id="px-epochs" role="group" aria-label="Эпоха">
-          ${[0, 1, 2, 3].map((i) => `<button type="button" data-epoch="${i}">E${i + 1}</button>`).join('')}
-        </div>
-        <button type="button" class="ui-btn sxw-icon" id="px-auto" aria-label="Автоблинк" aria-pressed="true">${ICON.pause}</button>
-        <button type="button" class="ui-btn primary" id="px-next">Следующий сектор${ICON.next}</button>
-      </div>
-      <div class="sxw-plot sxw-image"><canvas id="px-canvas" data-testid="blink-canvas"></canvas></div>
-      <dl class="sxw-kv sxw-kv3" id="px-meas"></dl>
-      <div class="sxw-verdict" id="px-verdict"></div>
-      <h3 class="sxw-h">Кандидаты сессии <em id="px-counts"></em></h3>
-      <div class="sxw-scroll"><table class="ui-table sxw-cand" id="px-cand"></table></div>
-      <h3 class="sxw-h">Журнал</h3>
-      <pre class="sxw-log" id="px-log"></pre>
-      <div class="sxw-actions">
-        <button type="button" class="ui-btn primary" id="px-3d">${ICON.target}Planet X в 3D</button>
-        <button type="button" class="ui-btn" id="px-spec">Спектр Planet X</button>
-      </div>
-    </section>
-
-    <section class="sxw-pane" data-pane="mission" role="tabpanel" hidden>
-      <h3 class="sxw-h">Паспорт миссии</h3>
-      <table class="ui-table sxw-facts">
-        <tr><td>Полное название</td><td>Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer</td></tr>
-        <tr><td>Программа</td><td>NASA Explorers · MIDEX-9</td></tr>
-        <tr><td>Запуск</td><td class="n">${utc(new Date(SPHEREX_LAUNCH_MS))} UTC</td></tr>
-        <tr><td>Носитель / площадка</td><td>Falcon 9 · Ванденберг</td></tr>
-        <tr><td>Начало обзора</td><td class="n">${fmtDay(SPHEREX_SURVEY_START_MS)}</td></tr>
-        <tr><td>Орбита</td><td>Солнечно-синхронная, полярная</td></tr>
-        <tr><td>Диапазон</td><td class="n">0,75–5,00 мкм</td></tr>
-        <tr><td>Спектральных каналов</td><td class="n">102 (6 детекторов × 17)</td></tr>
-        <tr><td>Разрешение R</td><td class="n">35–41 · 112 · 128</td></tr>
-        <tr><td>Поле зрения</td><td class="n">11,3° × 3,5°</td></tr>
-        <tr><td>Пиксель</td><td class="n">${RESEARCH_ARCSEC_PER_PX.toFixed(1)}″</td></tr>
-        <tr><td>Каденс обзора</td><td>Всё небо каждые ~6 мес.</td></tr>
-        <tr><td>Базовая миссия</td><td>2 года · 4 прохода неба</td></tr>
-        <tr><td>Каталог (план)</td><td class="n">~450 млн галактик · ~100 млн звёзд</td></tr>
-        <tr><td>Архив</td><td>NASA/IPAC IRSA · HiPS через CDS</td></tr>
-      </table>
-      <h3 class="sxw-h">Научные задачи</h3>
-      <table class="ui-table sxw-facts">
-        <tr><td>Инфляция</td><td>Трёхмерная карта ~450 млн галактик → негауссовость первичных флуктуаций</td></tr>
-        <tr><td>История галактик</td><td>Суммарное фоновое излучение (intensity mapping)</td></tr>
-        <tr><td>Льды</td><td>H₂O, CO₂, CO в молекулярных облаках Галактики</td></tr>
-      </table>
-    </section>
-  `;
+        <span class="ui-micro">SPHEREx · MIDEX-9 · NORAD ${SPHEREX_NORAD} · COSPAR ${SPHEREX_COSPAR}${localized("</span>\n        <h2>Научная консоль</h2>\n      </div>\n      <span id=\"sxw-src\" class=\"sxw-src\">TLE</span>\n      <button type=\"button\" id=\"sxw-close\" class=\"sxw-x\" aria-label=\"Закрыть\">", "</span>\n        <h2>Science console</h2>\n      </div>\n      <span id=\"sxw-src\" class=\"sxw-src\">TLE</span>\n      <button type=\"button\" id=\"sxw-close\" class=\"sxw-x\" aria-label=\"Close\">")}${ICON.close}${localized("</button>\n    </header>\n    <div class=\"sxw-status\" id=\"sxw-status\">\n      <div><span>UTC</span><b id=\"st-utc\">—</b></div>\n      <div><span>Виток</span><b id=\"st-orbit\">—</b></div>\n      <div><span>Высота</span><b id=\"st-alt\">—</b></div>\n      <div><span>Накл.</span><b id=\"st-inc\">—</b></div>\n      <div><span>Проход</span><b id=\"st-pass\">—</b></div>\n      <div><span>Небо</span><b id=\"st-sky\">—</b></div>\n    </div>\n    <nav class=\"ui-tabs sxw-tabs\" role=\"tablist\" aria-label=\"Разделы SPHEREx\">\n      <button role=\"tab\" data-tab=\"telemetry\" aria-selected=\"true\">Телеметрия</button>\n      <button role=\"tab\" data-tab=\"spectrum\" aria-selected=\"false\">Спектрометр</button>\n      <button role=\"tab\" data-tab=\"planetx\" aria-selected=\"false\">Поиск Planet X</button>\n      <button role=\"tab\" data-tab=\"mission\" aria-selected=\"false\">Миссия</button>\n    </nav>\n\n    <section class=\"sxw-pane\" data-pane=\"telemetry\" role=\"tabpanel\">\n      <h3 class=\"sxw-h\">Орбита · SGP4</h3>\n      <dl class=\"sxw-kv\" id=\"tel-kv\"></dl>\n      <h3 class=\"sxw-h\">Подспутниковая трасса <em>−½ / +1 виток · терминатор</em></h3>\n      <div class=\"sxw-plot\"><canvas id=\"tel-track\"></canvas></div>\n      <h3 class=\"sxw-h\">Обзор неба <em>полное небо каждые 182,6 сут</em></h3>\n      <table class=\"ui-table sxw-pass\" id=\"tel-pass\"></table>\n      <dl class=\"sxw-kv\" id=\"tel-survey\"></dl>\n      <div class=\"sxw-actions\">\n        <button type=\"button\" class=\"ui-btn primary\" id=\"act-craft\">", "</button>\n    </header>\n    <div class=\"sxw-status\" id=\"sxw-status\">\n      <div><span>UTC</span><b id=\"st-utc\">—</b></div>\n      <div><span>Orbit</span><b id=\"st-orbit\">—</b></div>\n      <div><span>Altitude</span><b id=\"st-alt\">—</b></div>\n      <div><span>Incl.</span><b id=\"st-inc\">—</b></div>\n      <div><span>Pass</span><b id=\"st-pass\">—</b></div>\n      <div><span>Sky</span><b id=\"st-sky\">—</b></div>\n    </div>\n    <nav class=\"ui-tabs sxw-tabs\" role=\"tablist\" aria-label=\"SPHEREx sections\">\n      <button role=\"tab\" data-tab=\"telemetry\" aria-selected=\"true\">Telemetry</button>\n      <button role=\"tab\" data-tab=\"spectrum\" aria-selected=\"false\">Spectrometer</button>\n      <button role=\"tab\" data-tab=\"planetx\" aria-selected=\"false\">Planet X search</button>\n      <button role=\"tab\" data-tab=\"mission\" aria-selected=\"false\">Mission</button>\n    </nav>\n\n    <section class=\"sxw-pane\" data-pane=\"telemetry\" role=\"tabpanel\">\n      <h3 class=\"sxw-h\">Orbit · SGP4</h3>\n      <dl class=\"sxw-kv\" id=\"tel-kv\"></dl>\n      <h3 class=\"sxw-h\">Ground track <em>−½ / +1 orbit · terminator</em></h3>\n      <div class=\"sxw-plot\"><canvas id=\"tel-track\"></canvas></div>\n      <h3 class=\"sxw-h\">Sky survey <em>full sky every 182.6 days</em></h3>\n      <table class=\"ui-table sxw-pass\" id=\"tel-pass\"></table>\n      <dl class=\"sxw-kv\" id=\"tel-survey\"></dl>\n      <div class=\"sxw-actions\">\n        <button type=\"button\" class=\"ui-btn primary\" id=\"act-craft\">")}${ICON.target}${localized("Подлететь к SPHEREx</button>\n        <button type=\"button\" class=\"ui-btn\" id=\"act-scope\">", "Fly to SPHEREx</button>\n        <button type=\"button\" class=\"ui-btn\" id=\"act-scope\">")}${ICON.scope}${localized("<span>Вид с телескопа</span></button>\n        <button type=\"button\" class=\"ui-btn\" id=\"act-cone\" aria-pressed=\"false\">Конус FOV</button>\n      </div>\n    </section>\n\n    <section class=\"sxw-pane\" data-pane=\"spectrum\" role=\"tabpanel\" hidden>\n      <h3 class=\"sxw-h\">Детекторы <em>щелчок — показать канал на ИК-небе</em></h3>\n      <table class=\"ui-table sxw-det\" id=\"spec-det\"></table>\n      <div class=\"sxw-row\">\n        <button type=\"button\" class=\"ui-btn\" id=\"act-irsky\" aria-pressed=\"false\">ИК-небо</button>\n        <div class=\"sxw-seg\" id=\"spec-bands\" role=\"group\" aria-label=\"Канал ИК-неба\">\n          ", "<span>Telescope view</span></button>\n        <button type=\"button\" class=\"ui-btn\" id=\"act-cone\" aria-pressed=\"false\">FOV cone</button>\n      </div>\n    </section>\n\n    <section class=\"sxw-pane\" data-pane=\"spectrum\" role=\"tabpanel\" hidden>\n      <h3 class=\"sxw-h\">Detectors <em>click to show a channel on the infrared sky</em></h3>\n      <table class=\"ui-table sxw-det\" id=\"spec-det\"></table>\n      <div class=\"sxw-row\">\n        <button type=\"button\" class=\"ui-btn\" id=\"act-irsky\" aria-pressed=\"false\">Infrared sky</button>\n        <div class=\"sxw-seg\" id=\"spec-bands\" role=\"group\" aria-label=\"Infrared sky channel\">\n          ")}${(['color', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6'] as SurveyBandId[]).map((b) => `<button type="button" data-band="${b}">${b === 'color' ? 'RGB' : b}</button>`).join('')}${localized("\n        </div>\n      </div>\n      <h3 class=\"sxw-h\">Спектр 102 канала <em>модель цели · F<sub>ν</sub> норм.</em></h3>\n      <div class=\"sxw-row\">\n        <label class=\"ui-micro\" for=\"spec-target\">Цель</label>\n        <select id=\"spec-target\" class=\"ui-input\">", "\n        </div>\n      </div>\n      <h3 class=\"sxw-h\">102-channel spectrum <em>target model · F<sub>ν</sub> norm.</em></h3>\n      <div class=\"sxw-row\">\n        <label class=\"ui-micro\" for=\"spec-target\">Target</label>\n        <select id=\"spec-target\" class=\"ui-input\">")}${SPECTRAL_TARGETS.map((t) => `<option value="${t.id}">${t.name}</option>`).join('')}${localized("</select>\n        <span class=\"sxw-temp\" id=\"spec-temp\"></span>\n      </div>\n      <div class=\"sxw-plot\"><canvas id=\"spec-canvas\" data-testid=\"spectrum-canvas\"></canvas></div>\n      <div class=\"sxw-readout\" id=\"spec-readout\">КАН — · — · λ — мкм · R — · Fν —</div>\n      <div class=\"sxw-lines\" id=\"spec-lines\"></div>\n      <h3 class=\"sxw-h\" id=\"arch-title\">Архив QR2</h3>\n      <table class=\"ui-table\" id=\"arch-table\"></table>\n    </section>\n\n    <section class=\"sxw-pane\" data-pane=\"planetx\" role=\"tabpanel\" hidden>\n      <p class=\"sxw-disclaimer\">Симуляция метода на синтетических секторах: параллакс и шум — реальная физика, изображения — нет.</p>\n      <div class=\"sxw-row sxw-toolbar\">\n        <div class=\"sxw-seg\" id=\"px-mode\" role=\"group\" aria-label=\"Режим\">\n          <button type=\"button\" data-mode=\"frame\">Кадр</button>\n          <button type=\"button\" data-mode=\"diff\" title=\"Разностное изображение: эпоха n минус эпоха 1\">Eₙ−E₁</button>\n        </div>\n        <div class=\"sxw-seg\" id=\"px-epochs\" role=\"group\" aria-label=\"Эпоха\">\n          ", "</select>\n        <span class=\"sxw-temp\" id=\"spec-temp\"></span>\n      </div>\n      <div class=\"sxw-plot\"><canvas id=\"spec-canvas\" data-testid=\"spectrum-canvas\"></canvas></div>\n      <div class=\"sxw-readout\" id=\"spec-readout\">CH — · — · λ — μm · R — · Fν —</div>\n      <div class=\"sxw-lines\" id=\"spec-lines\"></div>\n      <h3 class=\"sxw-h\" id=\"arch-title\">QR2 archive</h3>\n      <table class=\"ui-table\" id=\"arch-table\"></table>\n    </section>\n\n    <section class=\"sxw-pane\" data-pane=\"planetx\" role=\"tabpanel\" hidden>\n      <p class=\"sxw-disclaimer\">Method simulation using synthetic sectors: parallax and noise follow real physics; the images are synthetic.</p>\n      <div class=\"sxw-row sxw-toolbar\">\n        <div class=\"sxw-seg\" id=\"px-mode\" role=\"group\" aria-label=\"Mode\">\n          <button type=\"button\" data-mode=\"frame\">Frame</button>\n          <button type=\"button\" data-mode=\"diff\" title=\"Difference image: epoch n minus epoch 1\">Eₙ−E₁</button>\n        </div>\n        <div class=\"sxw-seg\" id=\"px-epochs\" role=\"group\" aria-label=\"Epoch\">\n          ")}${[0, 1, 2, 3].map((i) => `<button type="button" data-epoch="${i}">E${i + 1}</button>`).join('')}${localized("\n        </div>\n        <button type=\"button\" class=\"ui-btn sxw-icon\" id=\"px-auto\" aria-label=\"Автоблинк\" aria-pressed=\"true\">", "\n        </div>\n        <button type=\"button\" class=\"ui-btn sxw-icon\" id=\"px-auto\" aria-label=\"Auto blink\" aria-pressed=\"true\">")}${ICON.pause}${localized("</button>\n        <button type=\"button\" class=\"ui-btn primary\" id=\"px-next\">Следующий сектор", "</button>\n        <button type=\"button\" class=\"ui-btn primary\" id=\"px-next\">Next sector")}${ICON.next}${localized("</button>\n      </div>\n      <div class=\"sxw-plot sxw-image\"><canvas id=\"px-canvas\" data-testid=\"blink-canvas\"></canvas></div>\n      <dl class=\"sxw-kv sxw-kv3\" id=\"px-meas\"></dl>\n      <div class=\"sxw-verdict\" id=\"px-verdict\"></div>\n      <h3 class=\"sxw-h\">Кандидаты сессии <em id=\"px-counts\"></em></h3>\n      <div class=\"sxw-scroll\"><table class=\"ui-table sxw-cand\" id=\"px-cand\"></table></div>\n      <h3 class=\"sxw-h\">Журнал</h3>\n      <pre class=\"sxw-log\" id=\"px-log\"></pre>\n      <div class=\"sxw-actions\">\n        <button type=\"button\" class=\"ui-btn primary\" id=\"px-3d\">", "</button>\n      </div>\n      <div class=\"sxw-plot sxw-image\"><canvas id=\"px-canvas\" data-testid=\"blink-canvas\"></canvas></div>\n      <dl class=\"sxw-kv sxw-kv3\" id=\"px-meas\"></dl>\n      <div class=\"sxw-verdict\" id=\"px-verdict\"></div>\n      <h3 class=\"sxw-h\">Session candidates <em id=\"px-counts\"></em></h3>\n      <div class=\"sxw-scroll\"><table class=\"ui-table sxw-cand\" id=\"px-cand\"></table></div>\n      <h3 class=\"sxw-h\">Log</h3>\n      <pre class=\"sxw-log\" id=\"px-log\"></pre>\n      <div class=\"sxw-actions\">\n        <button type=\"button\" class=\"ui-btn primary\" id=\"px-3d\">")}${ICON.target}${localized("Planet X в 3D</button>\n        <button type=\"button\" class=\"ui-btn\" id=\"px-spec\">Спектр Planet X</button>\n      </div>\n    </section>\n\n    <section class=\"sxw-pane\" data-pane=\"mission\" role=\"tabpanel\" hidden>\n      <h3 class=\"sxw-h\">Паспорт миссии</h3>\n      <table class=\"ui-table sxw-facts\">\n        <tr><td>Полное название</td><td>Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer</td></tr>\n        <tr><td>Программа</td><td>NASA Explorers · MIDEX-9</td></tr>\n        <tr><td>Запуск</td><td class=\"n\">", "Planet X in 3D</button>\n        <button type=\"button\" class=\"ui-btn\" id=\"px-spec\">Planet X spectrum</button>\n      </div>\n    </section>\n\n    <section class=\"sxw-pane\" data-pane=\"mission\" role=\"tabpanel\" hidden>\n      <h3 class=\"sxw-h\">Mission profile</h3>\n      <table class=\"ui-table sxw-facts\">\n        <tr><td>Full name</td><td>Spectro-Photometer for the History of the Universe, Epoch of Reionization and Ices Explorer</td></tr>\n        <tr><td>Program</td><td>NASA Explorers · MIDEX-9</td></tr>\n        <tr><td>Launch</td><td class=\"n\">")}${utc(new Date(SPHEREX_LAUNCH_MS))}${localized(" UTC</td></tr>\n        <tr><td>Носитель / площадка</td><td>Falcon 9 · Ванденберг</td></tr>\n        <tr><td>Начало обзора</td><td class=\"n\">", " UTC</td></tr>\n        <tr><td>Launcher / site</td><td>Falcon 9 · Vandenberg</td></tr>\n        <tr><td>Survey start</td><td class=\"n\">")}${fmtDay(SPHEREX_SURVEY_START_MS)}${localized("</td></tr>\n        <tr><td>Орбита</td><td>Солнечно-синхронная, полярная</td></tr>\n        <tr><td>Диапазон</td><td class=\"n\">0,75–5,00 мкм</td></tr>\n        <tr><td>Спектральных каналов</td><td class=\"n\">102 (6 детекторов × 17)</td></tr>\n        <tr><td>Разрешение R</td><td class=\"n\">35–41 · 112 · 128</td></tr>\n        <tr><td>Поле зрения</td><td class=\"n\">11,3° × 3,5°</td></tr>\n        <tr><td>Пиксель</td><td class=\"n\">", "</td></tr>\n        <tr><td>Orbit</td><td>Sun-synchronous, polar</td></tr>\n        <tr><td>Range</td><td class=\"n\">0.75–5.00 μm</td></tr>\n        <tr><td>Spectral channels</td><td class=\"n\">102 (6 detectors ×17)</td></tr>\n        <tr><td>Resolving power R</td><td class=\"n\">35–41 · 112 · 128</td></tr>\n        <tr><td>Field of view</td><td class=\"n\">11,3° × 3,5°</td></tr>\n        <tr><td>Pixel</td><td class=\"n\">")}${RESEARCH_ARCSEC_PER_PX.toFixed(1)}${localized("″</td></tr>\n        <tr><td>Каденс обзора</td><td>Всё небо каждые ~6 мес.</td></tr>\n        <tr><td>Базовая миссия</td><td>2 года · 4 прохода неба</td></tr>\n        <tr><td>Каталог (план)</td><td class=\"n\">~450 млн галактик · ~100 млн звёзд</td></tr>\n        <tr><td>Архив</td><td>NASA/IPAC IRSA · HiPS через CDS</td></tr>\n      </table>\n      <h3 class=\"sxw-h\">Научные задачи</h3>\n      <table class=\"ui-table sxw-facts\">\n        <tr><td>Инфляция</td><td>Трёхмерная карта ~450 млн галактик → негауссовость первичных флуктуаций</td></tr>\n        <tr><td>История галактик</td><td>Суммарное фоновое излучение (intensity mapping)</td></tr>\n        <tr><td>Льды</td><td>H₂O, CO₂, CO в молекулярных облаках Галактики</td></tr>\n      </table>\n    </section>\n  ", "″</td></tr>\n        <tr><td>Survey cadence</td><td>Entire sky every ~6 months</td></tr>\n        <tr><td>Baseline mission</td><td>2 years · 4 sky passes</td></tr>\n        <tr><td>Catalog (planned)</td><td class=\"n\">~450 million galaxies · ~100 million stars</td></tr>\n        <tr><td>Archive</td><td>NASA/IPAC IRSA · HiPS via CDS</td></tr>\n      </table>\n      <h3 class=\"sxw-h\">Science objectives</h3>\n      <table class=\"ui-table sxw-facts\">\n        <tr><td>Inflation</td><td>3D map of ~450 million galaxies → non-Gaussianity of primordial fluctuations</td></tr>\n        <tr><td>Galaxy history</td><td>Integrated background light (intensity mapping)</td></tr>\n        <tr><td>Ices</td><td>H₂O, CO₂, CO in Galactic molecular clouds</td></tr>\n      </table>\n    </section>\n  ")}`;
 
   const $ = <T extends HTMLElement = HTMLElement>(s: string) => panel.querySelector<T>(s)!;
   const scopeBtn = $<HTMLButtonElement>('#act-scope');
@@ -289,7 +180,7 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
     irBtn.setAttribute('aria-pressed', String(ir));
     coneBtn.setAttribute('aria-pressed', String(cone));
     scopeBtn.setAttribute('aria-pressed', String(scope));
-    scopeBtn.querySelector('span')!.textContent = scope ? 'Выйти из телескопа' : 'Вид с телескопа';
+    scopeBtn.querySelector('span')!.textContent = scope ? localized("Выйти из телескопа", "Exit telescope view") : localized("Вид с телескопа", "Telescope view");
     bandBtns.forEach((b) => b.setAttribute('aria-pressed', String(ir && b.dataset.band === band)));
     panel.querySelectorAll<HTMLTableRowElement>('#spec-det tr[data-band]').forEach((r) => r.classList.toggle('on', ir && r.dataset.band === band));
   };
@@ -365,10 +256,10 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
     if (tel) {
       const orb = orbitNumber(tle, date, tel.revsPerDay);
       set('#st-orbit', orb != null ? String(orb) : '—');
-      set('#st-alt', `${tel.altitudeKm.toFixed(1)} км`);
+      set('#st-alt', `${tel.altitudeKm.toFixed(1)}${localized(" км", " km")}`);
       set('#st-inc', `${tel.inclinationDeg.toFixed(2)}°`);
     } else {
-      set('#st-orbit', 'до запуска'); set('#st-alt', '—'); set('#st-inc', '—');
+      set('#st-orbit', localized("до запуска", "before launch")); set('#st-alt', '—'); set('#st-inc', '—');
     }
     const before = date.getTime() < SPHEREX_SURVEY_START_MS;
     set('#st-pass', before ? '—' : `${st.currentPass}`);
@@ -381,33 +272,33 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
     const row = (k: string, v: string) => `<div><dt>${k}</dt><dd>${v}</dd></div>`;
     $('#tel-kv').innerHTML = tel
       ? [
-          row('Высота', `${tel.altitudeKm.toFixed(2)} км`),
-          row('Скорость', `${tel.speedKmS.toFixed(3)} км/с`),
-          row('Период', `${tel.periodMin.toFixed(2)} мин`),
-          row('Наклонение', `${tel.inclinationDeg.toFixed(3)}°`),
-          row('Шир. / долг.', `${sgn(tel.latDeg, 2)}° ${sgn(tel.lonDeg, 2)}°`),
-          row('Освещённость', tel.sunlit ? 'Солнце' : 'Тень Земли'),
-          row('Витков/сут', tel.revsPerDay.toFixed(4)),
-          row('Эпоха TLE', tle.epochIso.slice(0, 16).replace('T', ' ')),
+          row(localized("Высота", "Altitude"), `${tel.altitudeKm.toFixed(2)}${localized(" км", " km")}`),
+          row(localized("Скорость", "Speed"), `${tel.speedKmS.toFixed(3)}${localized(" км/с", " km/s")}`),
+          row(localized("Период", "Period"), `${tel.periodMin.toFixed(2)}${localized(" мин", " min")}`),
+          row(localized("Наклонение", "Inclination"), `${tel.inclinationDeg.toFixed(3)}°`),
+          row(localized("Шир. / долг.", "Lat. / lon."), `${sgn(tel.latDeg, 2)}° ${sgn(tel.lonDeg, 2)}°`),
+          row(localized("Освещённость", "Illumination"), tel.sunlit ? localized("Солнце", "Sun") : localized("Тень Земли", "Earth’s shadow")),
+          row(localized("Витков/сут", "Orbits/day"), tel.revsPerDay.toFixed(4)),
+          row(localized("Эпоха TLE", "TLE epoch"), tle.epochIso.slice(0, 16).replace('T', ' ')),
         ].join('')
-      : row('Статус', 'Аппарат ещё не запущен на выбранную дату') + row('Запуск', utc(new Date(SPHEREX_LAUNCH_MS)));
+      : row(localized("Статус", "Status"), localized("Аппарат ещё не запущен на выбранную дату", "Spacecraft not yet launched on the selected date")) + row(localized("Запуск", "Launch"), utc(new Date(SPHEREX_LAUNCH_MS)));
 
     const passes = [1, 2, 3, 4, 5, 6];
-    $('#tel-pass').innerHTML = `<thead><tr><th>Проход</th><th>Интервал</th><th>Покрытие</th><th></th></tr></thead><tbody>${passes
+    $('#tel-pass').innerHTML = `${localized("<thead><tr><th>Проход</th><th>Интервал</th><th>Покрытие</th><th></th></tr></thead><tbody>", "<thead><tr><th>Pass</th><th>Interval</th><th>Coverage</th><th></th></tr></thead><tbody>")}${passes
       .map((p) => {
         const t0 = SPHEREX_SURVEY_START_MS + (p - 1) * PASS_DAYS * 86400e3;
         const pct = date.getTime() < SPHEREX_SURVEY_START_MS ? 0 : p < st.currentPass ? 100 : p === st.currentPass ? st.passProgressPct : 0;
-        const ext = p > 4 ? ' <i>расш.</i>' : '';
+        const ext = p > 4 ? localized(" <i>расш.</i>", " <i>ext.</i>") : '';
         return `<tr class="${p === st.currentPass ? 'cur' : ''}"><td class="n">${p}${ext}</td><td class="n">${fmtDay(t0)} → ${fmtDay(t0 + PASS_DAYS * 86400e3)}</td>
           <td class="sxw-bar"><span style="width:${pct}%"></span></td><td class="n">${pct.toFixed(pct > 0 && pct < 100 ? 1 : 0)} %</td></tr>`;
       })
       .join('')}</tbody>`;
     const row2 = (k: string, v: string) => `<div><dt>${k}</dt><dd>${v}</dd></div>`;
     $('#tel-survey').innerHTML = [
-      row2('Спектров', `${st.totalSpectraBillions.toFixed(2)} млрд`),
-      row2('Экспозиций', st.exposuresCount.toLocaleString('ru-RU')),
-      row2('Галактик / звёзд', `${st.galaxiesCatalogedM} / ${st.starsCatalogedM} млн`),
-      row2('Глубина полей', `${st.deepFieldDepthX}×`),
+      row2(localized("Спектров", "Spectra"), `${st.totalSpectraBillions.toFixed(2)}${localized(" млрд", " billion")}`),
+      row2(localized("Экспозиций", "Exposures"), st.exposuresCount.toLocaleString((document.documentElement.lang === 'ru' ? 'ru-RU' : 'en-US'))),
+      row2(localized("Галактик / звёзд", "Galaxies / stars"), `${st.galaxiesCatalogedM} / ${st.starsCatalogedM}${localized(" млн", " million")}`),
+      row2(localized("Глубина полей", "Field depth"), `${st.deepFieldDepthX}×`),
     ].join('');
   }
 
@@ -444,7 +335,7 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
     // Подсолнечная точка
     g.strokeStyle = '#ffcc4d'; g.beginPath(); g.arc(X(((lonS + 540) % 360) - 180), Y(decl * 180 / Math.PI), 3.5, 0, Math.PI * 2); g.stroke();
 
-    if (!tel) { g.fillStyle = '#8a94a1'; g.font = MONO; g.textAlign = 'left'; g.fillText('нет данных: до запуска', L + 8, T + 8); return; }
+    if (!tel) { g.fillStyle = '#8a94a1'; g.font = MONO; g.textAlign = 'left'; g.fillText(localized("нет данных: до запуска", "no data: before launch"), L + 8, T + 8); return; }
     // Трасса: −0,5…+1 виток (SGP4), кэш на 20 с модельного времени
     if (!trackCache || Math.abs(trackCache.t - date.getTime()) > 20e3) {
       const per = tel.periodMin * 60e3, pts: [number, number][] = [];
@@ -474,7 +365,7 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
 
   // ---------- Спектрометр ----------
   function renderDetectors() {
-    $('#spec-det').innerHTML = `<thead><tr><th>Дет.</th><th>λ, мкм</th><th>R</th><th>Кан.</th><th>Назначение</th></tr></thead><tbody>${DETECTORS.map((d) => {
+    $('#spec-det').innerHTML = `${localized("<thead><tr><th>Дет.</th><th>λ, мкм</th><th>R</th><th>Кан.</th><th>Назначение</th></tr></thead><tbody>", "<thead><tr><th>Det.</th><th>λ, μm</th><th>R</th><th>Ch.</th><th>Purpose</th></tr></thead><tbody>")}${DETECTORS.map((d) => {
       const meta = archiveBands.find((b) => b.id === d.id);
       return `<tr data-band="${d.id}" tabindex="0"><td><b>${d.id}</b></td><td class="n">${d.min.toFixed(2)}–${d.max.toFixed(2)}</td><td class="n">${d.R}</td><td class="n">17</td><td>${meta?.scienceFocus ?? ''}</td></tr>`;
     }).join('')}</tbody>`;
@@ -493,10 +384,10 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
 
   function renderArchive() {
     $('#arch-title').innerHTML = archiveLive
-      ? `Архив QR2 <em>релиз ${archiveRelease.slice(0, 10)}</em>`
-      : 'Архив QR2';
-    $('#arch-table').innerHTML = `<thead><tr><th>Слой</th><th>λ, мкм</th><th>Покрытие</th><th>Тайлов HiPS</th></tr></thead><tbody>${archiveBands
-      .map((b) => `<tr><td>${b.id === 'color' ? 'RGB' : b.id}</td><td class="n">${b.lambdaMinUm.toFixed(2)}–${b.lambdaMaxUm.toFixed(2)}</td><td class="n">${b.skyCoveragePct.toFixed(2)} %</td><td class="n">${b.tilesCount.toLocaleString('ru-RU')}</td></tr>`)
+      ? `${localized("Архив QR2 <em>релиз ", "QR2 archive <em>release ")}${archiveRelease.slice(0, 10)}</em>`
+      : localized("Архив QR2", "QR2 archive");
+    $('#arch-table').innerHTML = `${localized("<thead><tr><th>Слой</th><th>λ, мкм</th><th>Покрытие</th><th>Тайлов HiPS</th></tr></thead><tbody>", "<thead><tr><th>Layer</th><th>λ, μm</th><th>Coverage</th><th>HiPS tiles</th></tr></thead><tbody>")}${archiveBands
+      .map((b) => `<tr><td>${b.id === 'color' ? 'RGB' : b.id}</td><td class="n">${b.lambdaMinUm.toFixed(2)}–${b.lambdaMaxUm.toFixed(2)}</td><td class="n">${b.skyCoveragePct.toFixed(2)} %</td><td class="n">${b.tilesCount.toLocaleString((document.documentElement.lang === 'ru' ? 'ru-RU' : 'en-US'))}</td></tr>`)
       .join('')}</tbody>`;
   }
 
@@ -533,12 +424,12 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
       const x = Math.round(X(um)) + 0.5, major = Math.abs(um - Math.round(um)) < 1e-6;
       g.strokeStyle = major ? '#3a4450' : '#29313b';
       g.beginPath(); g.moveTo(x, SPEC.T + ph); g.lineTo(x, SPEC.T + ph + (major ? 5 : 3)); g.stroke();
-      if (major) { g.textAlign = um === 5 ? 'right' : 'center'; g.fillText(um === 5 ? '5.0 мкм' : um.toFixed(1), um === 5 ? x + 6 : x, SPEC.T + ph + 7); }
+      if (major) { g.textAlign = um === 5 ? 'right' : 'center'; g.fillText(um === 5 ? localized("5.0 мкм", "5.0 μm") : um.toFixed(1), um === 5 ? x + 6 : x, SPEC.T + ph + 7); }
     }
     g.strokeStyle = '#3a4450';
     g.beginPath(); g.moveTo(SPEC.L + 0.5, SPEC.T); g.lineTo(SPEC.L + 0.5, SPEC.T + ph + 0.5); g.lineTo(SPEC.L + pw, SPEC.T + ph + 0.5); g.stroke();
     g.fillStyle = '#8a94a1';
-    g.save(); g.translate(10, SPEC.T + ph / 2); g.rotate(-Math.PI / 2); g.textAlign = 'center'; g.fillText('Fν, норм.', 0, 0); g.restore();
+    g.save(); g.translate(10, SPEC.T + ph / 2); g.rotate(-Math.PI / 2); g.textAlign = 'center'; g.fillText(localized("Fν, норм.", "Fν, norm."), 0, 0); g.restore();
 
     // Спектральные особенности: вертикальные метки
     g.font = MONO_S; g.textBaseline = 'bottom';
@@ -571,9 +462,9 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
 
   const setReadout = () => {
     const ro = $('#spec-readout');
-    if (!hoverChannel) { ro.textContent = 'КАН — · — · λ — мкм · R — · Fν —'; return; }
+    if (!hoverChannel) { ro.textContent = localized("КАН — · — · λ — мкм · R — · Fν —", "CH — · — · λ — μm · R — · Fν —"); return; }
     const d = DETECTORS.find((x) => x.id === hoverChannel!.band)!;
-    ro.innerHTML = `КАН <b>${String(hoverChannel.channel).padStart(3, '0')}</b>/102 · <b>${hoverChannel.band}</b> · λ <b>${hoverChannel.wavelengthUm.toFixed(3)}</b> мкм · Δλ ${(hoverChannel.wavelengthUm / d.R).toFixed(3)} · R ${d.R} · Fν <b>${hoverChannel.flux.toFixed(3)}</b>${hoverChannel.feature ? ` · <span class="acc">${hoverChannel.feature}</span>` : ''}`;
+    ro.innerHTML = `${localized("КАН <b>", "CH <b>")}${String(hoverChannel.channel).padStart(3, '0')}</b>/102 · <b>${hoverChannel.band}</b> · λ <b>${hoverChannel.wavelengthUm.toFixed(3)}${localized("</b> мкм · Δλ ", "</b> μm · Δλ ")}${(hoverChannel.wavelengthUm / d.R).toFixed(3)} · R ${d.R} · Fν <b>${hoverChannel.flux.toFixed(3)}</b>${hoverChannel.feature ? ` · <span class="acc">${hoverChannel.feature}</span>` : ''}`;
   };
   specCanvas.addEventListener('pointermove', (ev) => {
     const rect = specCanvas.getBoundingClientRect();
@@ -599,14 +490,14 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
   function ingestSector(s: SurveySector, est: DistanceEstimate) {
     session.scanned++;
     let line = `${stamp()}  ${s.label}  `;
-    if (s.kind === 'none') line += 'нет движущихся источников';
-    else if (!detected(s)) line += `источник ${s.snrDb.toFixed(1)}σ < ${DETECTION_SIGMA}σ — отбрасывается`;
+    if (s.kind === 'none') line += localized("нет движущихся источников", "no moving sources");
+    else if (!detected(s)) line += `${localized("источник ", "source ")}${s.snrDb.toFixed(1)}σ < ${DETECTION_SIGMA}${localized("σ — отбрасывается", "σ — rejected")}`;
     else {
       session.detections++;
       if (est.verdict === 'planet-x-candidate') session.planetX++;
       candidates.unshift({ n: session.detections, sector: s, est });
       const d = est.fromShortArcAu != null && est.fromParallaxJumpAu != null ? (est.fromShortArcAu + est.fromParallaxJumpAu) / 2 : null;
-      line += `C${session.detections}  ${KIND_LABEL[est.verdict].toUpperCase()}  d≈${fmtAu(d)} а.е.  ${s.snrDb.toFixed(1)}σ`;
+      line += `C${session.detections}  ${KIND_LABEL[est.verdict].toUpperCase()}  d≈${fmtAu(d)}${localized(" а.е.  ", " AU  ")}${s.snrDb.toFixed(1)}σ`;
     }
     log.unshift(line);
     if (log.length > 40) log.pop();
@@ -628,32 +519,32 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
     const dArc = Math.hypot(ep.dx - s.epochs[0].dx, ep.dy - s.epochs[0].dy) * (248 / 372) * RESEARCH_ARCSEC_PER_PX;
     const row = (k: string, v: string, cls = '') => `<div class="${cls}"><dt>${k}</dt><dd>${v}</dd></div>`;
     $('#px-meas').innerHTML = [
-      row('Сектор', s.label),
+      row(localized("Сектор", "Sector"), s.label),
       row('α / δ', `${s.raDeg.toFixed(2)}° ${sgn(s.decDeg, 2)}°`),
-      row('Канал', 'D5–D6 · 3,8–5,0 мкм'),
+      row(localized("Канал", "Channel"), localized("D5–D6 · 3,8–5,0 мкм", "D5–D6 · 3.8–5.0 μm")),
       row('Δ E1→E' + (blinkEpoch + 1), s.kind === 'none' ? '—' : `${dArc.toFixed(1)}″`),
-      row('Скорость', det && s.measuredShortArcRateArcsecPerDay != null ? `${s.measuredShortArcRateArcsecPerDay.toFixed(2)}″/сут` : '—'),
+      row(localized("Скорость", "Speed"), det && s.measuredShortArcRateArcsecPerDay != null ? `${s.measuredShortArcRateArcsecPerDay.toFixed(2)}${localized("″/сут", "″/day")}` : '—'),
       row('SNR', s.kind === 'none' ? '—' : `${s.snrDb.toFixed(1)}σ`, s.kind !== 'none' && !det ? 'warn' : ''),
-      row('d₁ короткая дуга', det ? `${fmtAu(e.fromShortArcAu)} а.е.` : '—'),
-      row('d₂ параллакс 6 мес.', det ? `${fmtAu(e.fromParallaxJumpAu)} а.е.` : '—'),
-      row('Согласие d₁/d₂', det && e.agreePct != null ? `${e.agreePct.toFixed(0)} %` : '—', det && e.agreePct != null && e.agreePct < 70 ? 'warn' : ''),
+      row(localized("d₁ короткая дуга", "d₁ short arc"), det ? `${fmtAu(e.fromShortArcAu)}${localized(" а.е.", " AU")}` : '—'),
+      row(localized("d₂ параллакс 6 мес.", "d₂ 6-month parallax"), det ? `${fmtAu(e.fromParallaxJumpAu)}${localized(" а.е.", " AU")}` : '—'),
+      row(localized("Согласие d₁/d₂", "d₁/d₂ agreement"), det && e.agreePct != null ? `${e.agreePct.toFixed(0)} %` : '—', det && e.agreePct != null && e.agreePct < 70 ? 'warn' : ''),
     ].join('');
     const v = $('#px-verdict');
     v.className = 'sxw-verdict ' + (det ? (e.verdict === 'planet-x-candidate' ? 'px' : 'det') : 'none');
     v.innerHTML = s.kind === 'none'
-      ? '<b>Пусто</b><span>Неподвижный фон во всех 4 эпохах.</span>'
+      ? localized("<b>Пусто</b><span>Неподвижный фон во всех 4 эпохах.</span>", "<b>Empty</b><span>Fixed background in all 4 epochs.</span>")
       : !det
-      ? `<b>Ниже порога</b><span>Источник ${s.snrDb.toFixed(1)}σ — порог обнаружения ${DETECTION_SIGMA}σ.</span>`
-      : `<b>${KIND_LABEL[e.verdict]}</b><span>${e.agreePct != null && e.agreePct >= 70 ? 'Оценки расстояния согласуются' : 'Оценки расходятся — нужны дополнительные проходы'} · модельное значение ${s.truthDistanceAu.toFixed(s.truthDistanceAu < 10 ? 1 : 0)} а.е.</span>`;
+      ? `${localized("<b>Ниже порога</b><span>Источник ", "<b>Below threshold</b><span>Source ")}${s.snrDb.toFixed(1)}${localized("σ — порог обнаружения ", "σ — detection threshold ")}${DETECTION_SIGMA}σ.</span>`
+      : `<b>${KIND_LABEL[e.verdict]}</b><span>${e.agreePct != null && e.agreePct >= 70 ? localized("Оценки расстояния согласуются", "Distance estimates agree") : localized("Оценки расходятся — нужны дополнительные проходы", "Estimates differ — additional passes needed")}${localized(" · модельное значение ", " · model value ")}${s.truthDistanceAu.toFixed(s.truthDistanceAu < 10 ? 1 : 0)}${localized(" а.е.</span>", " AU</span>")}`;
 
-    $('#px-counts').textContent = `секторов ${session.scanned} · обнаружений ${session.detections} · Planet X ${session.planetX}`;
-    $('#px-cand').innerHTML = `<thead><tr><th>#</th><th>Сектор</th><th>″/сут</th><th>d₁</th><th>d₂</th><th>Согл.</th><th>SNR</th><th>Класс</th></tr></thead><tbody>${
+    $('#px-counts').textContent = `${localized("секторов ", "sectors ")}${session.scanned}${localized(" · обнаружений ", " · detections ")}${session.detections} · Planet X ${session.planetX}`;
+    $('#px-cand').innerHTML = `${localized("<thead><tr><th>#</th><th>Сектор</th><th>″/сут</th><th>d₁</th><th>d₂</th><th>Согл.</th><th>SNR</th><th>Класс</th></tr></thead><tbody>", "<thead><tr><th>#</th><th>Sector</th><th>″/day</th><th>d₁</th><th>d₂</th><th>Agree.</th><th>SNR</th><th>Class</th></tr></thead><tbody>")}${
       candidates.length
         ? candidates.map((c) => `<tr data-seed="${c.sector.seed}" class="${c.sector === sector ? 'on' : ''} ${c.est.verdict === 'planet-x-candidate' ? 'px' : ''}" tabindex="0">
             <td class="n">C${c.n}</td><td>${c.sector.label}</td><td class="n">${c.sector.measuredShortArcRateArcsecPerDay!.toFixed(1)}</td>
             <td class="n">${fmtAu(c.est.fromShortArcAu)}</td><td class="n">${fmtAu(c.est.fromParallaxJumpAu)}</td>
             <td class="n">${c.est.agreePct != null ? c.est.agreePct.toFixed(0) : '—'}</td><td class="n">${c.sector.snrDb.toFixed(1)}</td><td>${KIND_LABEL[c.est.verdict]}</td></tr>`).join('')
-        : '<tr><td colspan="8" class="empty">Пока нет обнаружений ≥ 5σ</td></tr>'
+        : localized("<tr><td colspan=\"8\" class=\"empty\">Пока нет обнаружений ≥ 5σ</td></tr>", "<tr><td colspan=\"8\" class=\"empty\">No detections ≥5σ yet</td></tr>")
     }</tbody>`;
     panel.querySelectorAll<HTMLTableRowElement>('#px-cand tr[data-seed]').forEach((r) => {
       const open = () => { const c = candidates.find((x) => String(x.sector.seed) === r.dataset.seed); if (c) loadSector(c.sector, false); };
@@ -703,7 +594,7 @@ export function initSpherexLab(cb: SpherexLabCallbacks): SpherexLabController {
     };
     tag(`${sector.label}  E${blinkEpoch + 1}${viewMode === 'diff' ? '−E1' : ''}  D5–D6`, 8, 8);
     tag(`α ${sector.raDeg.toFixed(2)}°  δ ${sgn(sector.decDeg, 2)}°`, W - 8, 8, 'right');
-    tag(`деление 2′ · пикс ${RESEARCH_ARCSEC_PER_PX}″`, 8, H - 19);
+    tag(`${localized("деление 2′ · пикс ", "2′ divisions · pixel ")}${RESEARCH_ARCSEC_PER_PX}″`, 8, H - 19);
 
     // Маркер обнаружения
     if (detected(sector)) {

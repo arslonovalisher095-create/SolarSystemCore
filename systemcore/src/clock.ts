@@ -1,3 +1,4 @@
+import { localized } from './i18n';
 /** Глобальные часы симуляции: скорость в сим-секундах за реальную секунду. */
 export class SimClock {
   private simMs = Date.now();
@@ -19,11 +20,11 @@ export class SimClock {
   isLive() { return !this.paused && this.rate === 1 && Math.abs(this.simMs - Date.now()) < 5000; }
 
   describe() {
-    if (this.paused) return 'ПАУЗА';
+    if (this.paused) return localized("ПАУЗА", "PAUSED");
     if (this.isLive()) return '';
     const r = Math.abs(this.rate), sign = this.rate < 0 ? '−' : '';
-    const units: [number, string][] = [[31557600, 'год'], [2629800, 'мес'], [86400, 'день'], [3600, 'час'], [60, 'мин'], [1, 'сек']];
-    const [v, n] = units.find(([u]) => r >= u) ?? [1, 'сек'];
-    return `${sign}${+(r / v).toFixed(1)} ${n}/с`;
+    const units: [number, string][] = [[31557600, localized("год", "year")], [2629800, localized("мес", "mo")], [86400, localized("день", "day")], [3600, localized("час", "h")], [60, localized("мин", "min")], [1, localized("сек", "s")]];
+    const [v, n] = units.find(([u]) => r >= u) ?? [1, localized("сек", "s")];
+    return `${sign}${+(r / v).toFixed(1)} ${n}${localized("/с", "/s")}`;
   }
 }

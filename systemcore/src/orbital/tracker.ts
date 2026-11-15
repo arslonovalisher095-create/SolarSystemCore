@@ -1,3 +1,4 @@
+import { localized } from '../i18n';
 // Трекер орбитальных объектов: обзор засорённости, каталог с поиском, события фрагментации,
 // сопровождение выбранного объекта (SGP4, наземный трек, скрининг сближений) и малые тела.
 import './tracker.css';
@@ -35,7 +36,7 @@ export interface TrackerController {
 type Tab = 'overview' | 'catalog' | 'events' | 'object' | 'small';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-const nf = (x: number, d = 0) => x.toLocaleString('ru-RU', { maximumFractionDigits: d, minimumFractionDigits: d });
+const nf = (x: number, d = 0) => x.toLocaleString((document.documentElement.lang === 'ru' ? 'ru-RU' : 'en-US'), { maximumFractionDigits: d, minimumFractionDigits: d });
 const utc = (ms: number) => new Date(ms).toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
 const icon = (d: string) => `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}"/></svg>`;
 const I_CLOSE = icon('M3 3l10 10M13 3L3 13');
@@ -48,7 +49,7 @@ export function initTracker(deps: TrackerDeps): TrackerController {
   root.id = 'tracker';
   root.className = 'trk hidden';
   root.setAttribute('role', 'dialog');
-  root.setAttribute('aria-label', 'Трекер орбитальных объектов');
+  root.setAttribute('aria-label', localized("Трекер орбитальных объектов", "Orbital object tracker"));
   document.body.appendChild(root);
 
   // ---------------- состояние фильтров ----------------
@@ -92,20 +93,10 @@ export function initTracker(deps: TrackerDeps): TrackerController {
   // ---------------- каркас ----------------
   function frame() {
     const cat = deps.getCatalog();
-    root.innerHTML = `
-      <header class="trk-head">
-        <div class="trk-title">
-          <span class="ui-micro">Трекер · орбита Земли</span>
-          <strong>Космический мусор и спутники</strong>
-        </div>
-        <button class="trk-x" data-act="close" aria-label="Закрыть">${I_CLOSE}</button>
+    root.innerHTML = `${localized("\n      <header class=\"trk-head\">\n        <div class=\"trk-title\">\n          <span class=\"ui-micro\">Трекер · орбита Земли</span>\n          <strong>Космический мусор и спутники</strong>\n        </div>\n        <button class=\"trk-x\" data-act=\"close\" aria-label=\"Закрыть\">", "\n      <header class=\"trk-head\">\n        <div class=\"trk-title\">\n          <span class=\"ui-micro\">Tracker · Earth orbit</span>\n          <strong>Space debris and satellites</strong>\n        </div>\n        <button class=\"trk-x\" data-act=\"close\" aria-label=\"Close\">")}${I_CLOSE}</button>
       </header>
       <div class="trk-src">
-        <span>CelesTrak GP · ${utc(Date.parse(cat.generated)).slice(0, 16)} · <b class="ui-num">${nf(cat.objects.length)}</b> объектов</span>
-        <button class="ui-btn sm" data-act="refresh" title="Загрузить свежие элементы из зеркала CelesTrak">${I_REFRESH}<span>Обновить</span></button>
-      </div>
-      <nav class="ui-tabs trk-tabs" role="tablist">
-        ${(['overview', 'catalog', 'events', 'object', 'small'] as Tab[]).map((t) => `<button role="tab" data-tab="${t}" aria-selected="${st.tab === t}">${{ overview: 'Обзор', catalog: 'Каталог', events: 'События', object: 'Объект', small: 'Малые тела' }[t]}</button>`).join('')}
+        <span>CelesTrak GP · ${utc(Date.parse(cat.generated)).slice(0, 16)} · <b class="ui-num">${nf(cat.objects.length)}${localized("</b> объектов</span>\n        <button class=\"ui-btn sm\" data-act=\"refresh\" title=\"Загрузить свежие элементы из зеркала CelesTrak\">", "</b> objects</span>\n        <button class=\"ui-btn sm\" data-act=\"refresh\" title=\"Load fresh elements from the CelesTrak mirror\">")}${I_REFRESH}${localized("<span>Обновить</span></button>\n      </div>\n      <nav class=\"ui-tabs trk-tabs\" role=\"tablist\">\n        ", "<span>Refresh</span></button>\n      </div>\n      <nav class=\"ui-tabs trk-tabs\" role=\"tablist\">\n        ")}${(['overview', 'catalog', 'events', 'object', 'small'] as Tab[]).map((t) => `<button role="tab" data-tab="${t}" aria-selected="${st.tab === t}">${{ overview: localized("Обзор", "Overview"), catalog: localized("Каталог", "Catalog"), events: localized("События", "Events"), object: localized("Объект", "Object"), small: localized("Малые тела", "Small bodies") }[t]}</button>`).join('')}
       </nav>
       <div class="trk-body" id="trk-body"></div>`;
     renderTab();
@@ -149,57 +140,15 @@ export function initTracker(deps: TrackerDeps): TrackerController {
     const topDanger = [...dangerShells.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
     return `
       <section class="trk-kpis">
-        ${CLASS_NAMES.map((n, i) => `<button class="kpi ${st.cls[i] ? '' : 'off'}" data-cls="${i}" title="Показать/скрыть в 3D">
-          <i style="background:${CLASS_COLORS[i]}"></i><span class="ui-micro">${n}</span><b class="ui-num">${nf(cc[i])}</b></button>`).join('')}
+        ${CLASS_NAMES.map((n, i) => `<button class="kpi ${st.cls[i] ? '' : 'off'}" data-cls="${i}${localized("\" title=\"Показать/скрыть в 3D\">\n          <i style=\"background:", "\" title=\"Show/hide in 3D\">\n          <i style=\"background:")}${CLASS_COLORS[i]}"></i><span class="ui-micro">${n}</span><b class="ui-num">${nf(cc[i])}</b></button>`).join('')}
       </section>
       <section class="trk-sec trk-danger-panel">
         <div class="trk-sec-h">
-          <span class="ui-micro" style="color:${DANGER_COLOR}">⚠ Опасные для запуска ракеты</span>
-          <span class="ui-micro">перигей ≤ 600 км · НОО</span>
-        </div>
-        <div class="trk-danger-kpis">
-          <div class="trk-danger-kpi crit" title="Критически опасные: перигей < 300 км">
-            <span class="dot-danger"></span>
-            <div><b class="ui-num">${nf(dangerCrit)}</b><span class="ui-micro">Критический</span></div>
-          </div>
-          <div class="trk-danger-kpi med" title="Средняя угроза: перигей 300–450 км">
-            <span class="dot-danger med"></span>
-            <div><b class="ui-num">${nf(dangerMed)}</b><span class="ui-micro">Средний</span></div>
-          </div>
-          <div class="trk-danger-kpi low" title="Низкая угроза: перигей 450–600 км">
-            <span class="dot-danger low"></span>
-            <div><b class="ui-num">${nf(dangerLow)}</b><span class="ui-micro">Низкий</span></div>
-          </div>
-          <div class="trk-danger-kpi total">
-            <div><b class="ui-num">${nf(dangerTotal)}</b><span class="ui-micro">Всего</span></div>
-          </div>
-        </div>
-        <p class="trk-danger-note">Красные точки в 3D = мусор на траектории запуска. Зелёные коридоры = безопасные полосы запуска (КК 28.5°, БК 51.6°, ВФБ 97.8°).</p>
-      </section>
-      <section class="trk-sec">
-        <div class="trk-sec-h"><span class="ui-micro">Распределение по высоте · НОО 150–2000 км</span><span class="ui-micro">шаг 25 км</span></div>
-        <canvas id="trk-hist" height="150"></canvas>
-        <div class="trk-legend">${CLASS_NAMES.map((n, i) => `<span><i style="background:${CLASS_COLORS[i]}"></i>${n}</span>`).join('')}<span><i style="background:${DANGER_COLOR}"></i>Опасный</span></div>
-      </section>
-      <section class="trk-sec">
-        <div class="trk-sec-h"><span class="ui-micro">Наклонение × высота (лог.)</span><span class="ui-micro">каждая точка — объект</span></div>
-        <canvas id="trk-scatter" height="210"></canvas>
-      </section>
-      <section class="trk-sec trk-cols">
-        <div>
-          <div class="ui-micro">Орбитальные режимы</div>
-          <table class="ui-table">${Object.entries(rg).map(([k, v]) => `<tr><td>${{ LEO: 'НОО · LEO', MEO: 'СОО · MEO', GEO: 'ГСО · GEO', HEO: 'ВЭО · HEO' }[k]}</td><td class="n">${nf(v)}</td></tr>`).join('')}</table>
-        </div>
-        <div>
-          <div class="ui-micro">Пик обломков, высота</div>
-          <table class="ui-table">${topShells.map(([h, n]) => `<tr><td class="ui-num">${h}–${h + 50} км</td><td class="n">${nf(n)}</td></tr>`).join('')}</table>
+          <span class="ui-micro" style="color:${DANGER_COLOR}${localized("\">⚠ Опасные для запуска ракеты</span>\n          <span class=\"ui-micro\">перигей ≤ 600 км · НОО</span>\n        </div>\n        <div class=\"trk-danger-kpis\">\n          <div class=\"trk-danger-kpi crit\" title=\"Критически опасные: перигей < 300 км\">\n            <span class=\"dot-danger\"></span>\n            <div><b class=\"ui-num\">", "\">⚠ Rocket launch hazards</span>\n          <span class=\"ui-micro\">perigee ≤600 km · LEO</span>\n        </div>\n        <div class=\"trk-danger-kpis\">\n          <div class=\"trk-danger-kpi crit\" title=\"Critical: perigee <300 km\">\n            <span class=\"dot-danger\"></span>\n            <div><b class=\"ui-num\">")}${nf(dangerCrit)}${localized("</b><span class=\"ui-micro\">Критический</span></div>\n          </div>\n          <div class=\"trk-danger-kpi med\" title=\"Средняя угроза: перигей 300–450 км\">\n            <span class=\"dot-danger med\"></span>\n            <div><b class=\"ui-num\">", "</b><span class=\"ui-micro\">Critical</span></div>\n          </div>\n          <div class=\"trk-danger-kpi med\" title=\"Medium hazard: perigee 300–450 km\">\n            <span class=\"dot-danger med\"></span>\n            <div><b class=\"ui-num\">")}${nf(dangerMed)}${localized("</b><span class=\"ui-micro\">Средний</span></div>\n          </div>\n          <div class=\"trk-danger-kpi low\" title=\"Низкая угроза: перигей 450–600 км\">\n            <span class=\"dot-danger low\"></span>\n            <div><b class=\"ui-num\">", "</b><span class=\"ui-micro\">Medium</span></div>\n          </div>\n          <div class=\"trk-danger-kpi low\" title=\"Low hazard: perigee 450–600 km\">\n            <span class=\"dot-danger low\"></span>\n            <div><b class=\"ui-num\">")}${nf(dangerLow)}${localized("</b><span class=\"ui-micro\">Низкий</span></div>\n          </div>\n          <div class=\"trk-danger-kpi total\">\n            <div><b class=\"ui-num\">", "</b><span class=\"ui-micro\">Low</span></div>\n          </div>\n          <div class=\"trk-danger-kpi total\">\n            <div><b class=\"ui-num\">")}${nf(dangerTotal)}${localized("</b><span class=\"ui-micro\">Всего</span></div>\n          </div>\n        </div>\n        <p class=\"trk-danger-note\">Красные точки в 3D = мусор на траектории запуска. Зелёные коридоры = безопасные полосы запуска (КК 28.5°, БК 51.6°, ВФБ 97.8°).</p>\n      </section>\n      <section class=\"trk-sec\">\n        <div class=\"trk-sec-h\"><span class=\"ui-micro\">Распределение по высоте · НОО 150–2000 км</span><span class=\"ui-micro\">шаг 25 км</span></div>\n        <canvas id=\"trk-hist\" height=\"150\"></canvas>\n        <div class=\"trk-legend\">", "</b><span class=\"ui-micro\">Total</span></div>\n          </div>\n        </div>\n        <p class=\"trk-danger-note\">Red points in 3D = debris on launch trajectories. Green corridors = safe launch bands (CC 28.5°, BK 51.6°, VAFB 97.8°).</p>\n      </section>\n      <section class=\"trk-sec\">\n        <div class=\"trk-sec-h\"><span class=\"ui-micro\">Altitude distribution · LEO 150–2000 km</span><span class=\"ui-micro\">25 km bins</span></div>\n        <canvas id=\"trk-hist\" height=\"150\"></canvas>\n        <div class=\"trk-legend\">")}${CLASS_NAMES.map((n, i) => `<span><i style="background:${CLASS_COLORS[i]}"></i>${n}</span>`).join('')}<span><i style="background:${DANGER_COLOR}${localized("\"></i>Опасный</span></div>\n      </section>\n      <section class=\"trk-sec\">\n        <div class=\"trk-sec-h\"><span class=\"ui-micro\">Наклонение × высота (лог.)</span><span class=\"ui-micro\">каждая точка — объект</span></div>\n        <canvas id=\"trk-scatter\" height=\"210\"></canvas>\n      </section>\n      <section class=\"trk-sec trk-cols\">\n        <div>\n          <div class=\"ui-micro\">Орбитальные режимы</div>\n          <table class=\"ui-table\">", "\"></i>Hazardous</span></div>\n      </section>\n      <section class=\"trk-sec\">\n        <div class=\"trk-sec-h\"><span class=\"ui-micro\">Inclination × altitude (log)</span><span class=\"ui-micro\">each point is an object</span></div>\n        <canvas id=\"trk-scatter\" height=\"210\"></canvas>\n      </section>\n      <section class=\"trk-sec trk-cols\">\n        <div>\n          <div class=\"ui-micro\">Orbital regimes</div>\n          <table class=\"ui-table\">")}${Object.entries(rg).map(([k, v]) => `<tr><td>${{ LEO: localized("НОО · LEO", "LEO"), MEO: localized("СОО · MEO", "MEO"), GEO: localized("ГСО · GEO", "GEO"), HEO: localized("ВЭО · HEO", "HEO") }[k]}</td><td class="n">${nf(v)}</td></tr>`).join('')}${localized("</table>\n        </div>\n        <div>\n          <div class=\"ui-micro\">Пик обломков, высота</div>\n          <table class=\"ui-table\">", "</table>\n        </div>\n        <div>\n          <div class=\"ui-micro\">Debris peak altitude</div>\n          <table class=\"ui-table\">")}${topShells.map(([h, n]) => `<tr><td class="ui-num">${h}–${h + 50}${localized(" км</td><td class=\"n\">", " km</td><td class=\"n\">")}${nf(n)}</td></tr>`).join('')}</table>
         </div>
       </section>
       <section class="trk-sec">
-        <div class="trk-sec-h"><span class="ui-micro" style="color:${DANGER_COLOR}">Пик опасных · высота</span><span class="ui-micro">перигей ≤ 600 км</span></div>
-        <table class="ui-table">${topDanger.map(([h, n]) => `<tr><td class="ui-num"><span class="dot-danger sm"></span>${h}–${h + 50} км</td><td class="n" style="color:${DANGER_COLOR}">${nf(n)}</td></tr>`).join('')}</table>
-      </section>
-      <p class="trk-note">Состав: все действующие аппараты, облака обломков четырёх событий, объекты зоны ГСО и сходящие с орбиты из открытых групп CelesTrak. Полный каталог ~30 тыс. отслеживаемых объектов публикуется только на Space-Track (по регистрации).</p>`;
+        <div class="trk-sec-h"><span class="ui-micro" style="color:${DANGER_COLOR}${localized("\">Пик опасных · высота</span><span class=\"ui-micro\">перигей ≤ 600 км</span></div>\n        <table class=\"ui-table\">", "\">Hazard peak · altitude</span><span class=\"ui-micro\">perigee ≤600 km</span></div>\n        <table class=\"ui-table\">")}${topDanger.map(([h, n]) => `<tr><td class="ui-num"><span class="dot-danger sm"></span>${h}–${h + 50}${localized(" км</td><td class=\"n\" style=\"color:", " km</td><td class=\"n\" style=\"color:")}${DANGER_COLOR}">${nf(n)}</td></tr>`).join('')}${localized("</table>\n      </section>\n      <p class=\"trk-note\">Состав: все действующие аппараты, облака обломков четырёх событий, объекты зоны ГСО и сходящие с орбиты из открытых групп CelesTrak. Полный каталог ~30 тыс. отслеживаемых объектов публикуется только на Space-Track (по регистрации).</p>", "</table>\n      </section>\n      <p class=\"trk-note\">Includes all active spacecraft, debris clouds from four events, GEO-zone and decaying objects from public CelesTrak groups. The full catalog of ~30,000 tracked objects is only published on Space-Track (registration required).</p>")}`;
   }
 
   function drawOverviewCharts() {
@@ -246,8 +195,8 @@ export function initTracker(deps: TrackerDeps): TrackerController {
       // зоны
       g.fillStyle = 'rgba(255,107,44,0.06)'; g.fillRect(hx(500), iy(99.5), hx(1000) - hx(500), iy(96) - iy(99.5));
       g.fillStyle = '#56616d'; g.font = '10px ' + mono();
-      g.fillText('ССО', hx(1050), iy(98) + 3);
-      g.fillText('ГСО', hx(30000), iy(4));
+      g.fillText(localized("ССО", "SSO"), hx(1050), iy(98) + 3);
+      g.fillText(localized("ГСО", "GEO"), hx(30000), iy(4));
       // Зона опасности запуска: выделить полосу перигея ≤ 600 км
       g.fillStyle = 'rgba(255,26,26,0.04)';
       g.fillRect(hx(150), iy(108), hx(600) - hx(150), iy(15) - iy(108));
@@ -255,7 +204,7 @@ export function initTracker(deps: TrackerDeps): TrackerController {
       g.lineWidth = 1;
       g.beginPath(); g.moveTo(hx(600), T); g.lineTo(hx(600), T + ph); g.stroke();
       g.fillStyle = 'rgba(255,26,26,0.5)'; g.font = '9px ' + mono();
-      g.fillText('⚠ зона запуска', hx(170), iy(112) + 3);
+      g.fillText(localized("⚠ зона запуска", "⚠ launch zone"), hx(170), iy(112) + 3);
       // Обычные объекты
       for (const o of cat.objects) {
         if (!st.cls[o.cls] || isLaunchDangerous(o)) continue;
@@ -280,18 +229,10 @@ export function initTracker(deps: TrackerDeps): TrackerController {
   // ---------------- КАТАЛОГ ----------------
   function catalogHtml() {
     const tags = Object.keys(TAG_NAMES);
-    return `
-      <div class="trk-filters">
-        <input class="ui-input" id="trk-q" placeholder="Название, NORAD или COSPAR (напр. ISS, 25544, 1999-025)" value="${esc(st.q)}" autocomplete="off" spellcheck="false">
+    return `${localized("\n      <div class=\"trk-filters\">\n        <input class=\"ui-input\" id=\"trk-q\" placeholder=\"Название, NORAD или COSPAR (напр. ISS, 25544, 1999-025)\" value=\"", "\n      <div class=\"trk-filters\">\n        <input class=\"ui-input\" id=\"trk-q\" placeholder=\"Name, NORAD or COSPAR (e.g. ISS, 25544, 1999-025)\" value=\"")}${esc(st.q)}" autocomplete="off" spellcheck="false">
         <div class="chips">${CLASS_SHORT.map((n, i) => `<button class="chip ${st.cls[i] ? 'on' : ''}" data-cls="${i}" title="${CLASS_NAMES[i]}"><i style="background:${CLASS_COLORS[i]}"></i>${n}</button>`).join('')}
-          <span class="sep"></span>${['LEO', 'MEO', 'GEO', 'HEO'].map((r) => `<button class="chip ${st.regime.has(r) ? 'on' : ''}" data-reg="${r}">${r}</button>`).join('')}</div>
-        <div class="row">
-          <select class="ui-input" id="trk-tag"><option value="">Все группы</option>${tags.map((t) => `<option value="${t}" ${st.tag === t ? 'selected' : ''}>${TAG_NAMES[t]}</option>`).join('')}</select>
-          <label class="chk"><input type="checkbox" id="trk-iso" ${st.isolate ? 'checked' : ''}><span></span>Только отфильтрованное в 3D</label>
-        </div>
-      </div>
-      <div class="trk-table-h">
-        ${[['norad', 'NORAD'], ['name', 'Объект'], ['', 'Класс'], ['perigee', 'Перигей'], ['', 'Апогей'], ['incl', 'Накл.'], ['period', 'Период']].map(([k, n]) => `<button ${k ? `data-sort="${k}"` : 'disabled'} class="${st.sort === k ? 'on' : ''}">${n}</button>`).join('')}
+          <span class="sep"></span>${['LEO', 'MEO', 'GEO', 'HEO'].map((r) => `<button class="chip ${st.regime.has(r) ? 'on' : ''}" data-reg="${r}">${r}</button>`).join('')}${localized("</div>\n        <div class=\"row\">\n          <select class=\"ui-input\" id=\"trk-tag\"><option value=\"\">Все группы</option>", "</div>\n        <div class=\"row\">\n          <select class=\"ui-input\" id=\"trk-tag\"><option value=\"\">All groups</option>")}${tags.map((t) => `<option value="${t}" ${st.tag === t ? 'selected' : ''}>${TAG_NAMES[t]}</option>`).join('')}</select>
+          <label class="chk"><input type="checkbox" id="trk-iso" ${st.isolate ? 'checked' : ''}${localized("><span></span>Только отфильтрованное в 3D</label>\n        </div>\n      </div>\n      <div class=\"trk-table-h\">\n        ", "><span></span>Only filtered objects in 3D</label>\n        </div>\n      </div>\n      <div class=\"trk-table-h\">\n        ")}${[['norad', 'NORAD'], ['name', localized("Объект", "Object")], ['', localized("Класс", "Class")], ['perigee', localized("Перигей", "Perigee")], ['', localized("Апогей", "Apogee")], ['incl', localized("Накл.", "Incl.")], ['period', localized("Период", "Period")]].map(([k, n]) => `<button ${k ? `data-sort="${k}"` : 'disabled'} class="${st.sort === k ? 'on' : ''}">${n}</button>`).join('')}
       </div>
       <div class="trk-list" id="trk-list"><div class="trk-spacer"></div><div class="trk-rows"></div></div>
       <div class="trk-foot ui-micro" id="trk-count"></div>`;
@@ -310,7 +251,7 @@ export function initTracker(deps: TrackerDeps): TrackerController {
     if (!list) return;
     sortedCache = sorted();
     list.querySelector<HTMLElement>('.trk-spacer')!.style.height = sortedCache.length * ROW_H + 'px';
-    root.querySelector('#trk-count')!.textContent = `${nf(sortedCache.length)} из ${nf(deps.getCatalog().objects.length)} · в 3D: ${st.isolate ? 'только эти' : 'все, совпадения подсвечены'}`;
+    root.querySelector('#trk-count')!.textContent = `${nf(sortedCache.length)}${localized(" из ", " of ")}${nf(deps.getCatalog().objects.length)}${localized(" · в 3D: ", " · in 3D: ")}${st.isolate ? localized("только эти", "only these") : localized("все, совпадения подсвечены", "all, matches highlighted")}`;
     paintRows();
   }
   function paintRows() {
@@ -342,23 +283,17 @@ export function initTracker(deps: TrackerDeps): TrackerController {
       const p10 = hs[Math.floor(hs.length * 0.1)] ?? 0, p90 = hs[Math.floor(hs.length * 0.9)] ?? 0;
       return `<article class="trk-ev ${st.eventShown === tag ? 'on' : ''}">
         <div class="trk-ev-h"><strong>${title}</strong><span class="ui-num">${date}</span></div>
-        <p>${text}</p>
-        <div class="trk-ev-stats">
-          <span><span class="ui-micro">На орбите</span><b class="ui-num">${nf(objs.length)}</b></span>
-          <span><span class="ui-micro">Обломков</span><b class="ui-num">${nf(deb)}</b></span>
-          <span><span class="ui-micro">Высоты (10–90%)</span><b class="ui-num">${objs.length ? `${nf(p10)}–${nf(p90)} км` : '—'}</b></span>
+        <p>${text}${localized("</p>\n        <div class=\"trk-ev-stats\">\n          <span><span class=\"ui-micro\">На орбите</span><b class=\"ui-num\">", "</p>\n        <div class=\"trk-ev-stats\">\n          <span><span class=\"ui-micro\">In orbit</span><b class=\"ui-num\">")}${nf(objs.length)}${localized("</b></span>\n          <span><span class=\"ui-micro\">Обломков</span><b class=\"ui-num\">", "</b></span>\n          <span><span class=\"ui-micro\">Debris</span><b class=\"ui-num\">")}${nf(deb)}${localized("</b></span>\n          <span><span class=\"ui-micro\">Высоты (10–90%)</span><b class=\"ui-num\">", "</b></span>\n          <span><span class=\"ui-micro\">Altitudes (10–90%)</span><b class=\"ui-num\">")}${objs.length ? `${nf(p10)}–${nf(p90)}${localized(" км", " km")}` : '—'}</b></span>
         </div>
         <div class="trk-ev-act">
-          <button class="ui-btn ${st.eventShown === tag ? 'is-on' : ''}" data-show="${tag}">${I_EYE}<span>${st.eventShown === tag ? 'Скрыть облако' : 'Показать облако и орбиты'}</span></button>
-          <button class="ui-btn" data-list="${tag}"><span>Список</span></button>
-        </div>
-      </article>`;
+          <button class="ui-btn ${st.eventShown === tag ? 'is-on' : ''}" data-show="${tag}">${I_EYE}<span>${st.eventShown === tag ? localized("Скрыть облако", "Hide cloud") : localized("Показать облако и орбиты", "Show cloud and orbits")}</span></button>
+          <button class="ui-btn" data-list="${tag}${localized("\"><span>Список</span></button>\n        </div>\n      </article>", "\"><span>List</span></button>\n        </div>\n      </article>")}`;
     };
     return `<div class="trk-events">
       ${Object.entries(EVENTS).map(([k, e]) => card('evt:' + k, e.name, e.date, e.text)).join('')}
-      ${card('decay', 'Скоро сойдут с орбиты', 'CelesTrak', 'Объекты, которые по прогнозу войдут в атмосферу в ближайшие недели: низкий перигей и высокая скорость убывания периода.')}
-      ${card('gpz', 'Зона защиты геостационара', 'IADC', 'Объекты в кольце ГСО ±200 км и наклонении до 15°: действующие спутники, «кладбище» над ГСО и брошенные аппараты.')}
-      ${card('starlink', 'Starlink', 'SpaceX', 'Крупнейшая группировка: больше половины всех действующих спутников. Её оболочки 340–570 км хорошо видны на гистограмме высот.')}
+      ${card('decay', localized("Скоро сойдут с орбиты", "Re-entering soon"), 'CelesTrak', localized("Объекты, которые по прогнозу войдут в атмосферу в ближайшие недели: низкий перигей и высокая скорость убывания периода.", "Objects predicted to re-enter the atmosphere in the coming weeks: low perigee and rapidly decreasing orbital period."))}
+      ${card('gpz', localized("Зона защиты геостационара", "Geostationary protected zone"), 'IADC', localized("Объекты в кольце ГСО ±200 км и наклонении до 15°: действующие спутники, «кладбище» над ГСО и брошенные аппараты.", "Objects within GEO ±200 km and inclinations up to 15°: active satellites, the graveyard above GEO and abandoned spacecraft."))}
+      ${card('starlink', 'Starlink', 'SpaceX', localized("Крупнейшая группировка: больше половины всех действующих спутников. Её оболочки 340–570 км хорошо видны на гистограмме высот.", "The largest constellation: more than half of all active satellites. Its shells at 340–570 km are visible in the altitude histogram."))}
     </div>`;
   }
 
@@ -378,39 +313,24 @@ export function initTracker(deps: TrackerDeps): TrackerController {
   // ---------------- ОБЪЕКТ ----------------
   function objectHtml() {
     const o = deps.getTracked();
-    if (!o) return `<div class="trk-empty"><p>Объект не выбран.</p><p class="ui-micro">Кликните по точке у Земли, найдите объект во вкладке «Каталог» или в поиске (клавиша /).</p></div>`;
+    if (!o) return localized("<div class=\"trk-empty\"><p>Объект не выбран.</p><p class=\"ui-micro\">Кликните по точке у Земли, найдите объект во вкладке «Каталог» или в поиске (клавиша /).</p></div>", "<div class=\"trk-empty\"><p>No object selected.</p><p class=\"ui-micro\">Click a point near Earth, find an object in the Catalog tab or use search (press /).</p></div>");
     const m = modelFor(o);
     const ap = st.approaches?.forNorad === o.norad ? st.approaches : null;
     const ageDays = (deps.getDate().getTime() - o.epochMs) / 86400e3;
     return `
       <div class="trk-obj-h">
         <div><span class="ui-micro">NORAD ${o.norad} · ${esc(o.cospar || '—')}</span><strong>${esc(o.name)}</strong>
-          <span class="tags"><i style="background:${CLASS_COLORS[o.cls]}"></i>${CLASS_NAMES[o.cls]}${o.tags.filter((t) => TAG_NAMES[t]).map((t) => ` · ${TAG_NAMES[t]}`).join('')}</span></div>
-      </div>
-      <table class="ui-table trk-live" id="trk-live"></table>
-      <div class="trk-sec-h"><span class="ui-micro">Наземный трек · ±1,5 витка</span><span class="ui-micro" id="trk-ll"></span></div>
-      <canvas id="trk-map" height="190"></canvas>
-      <table class="ui-table">
-        <tr><td>Перигей / апогей</td><td class="n">${nf(o.perigeeKm)} / ${nf(o.apogeeKm)} км</td></tr>
-        <tr><td>Наклонение / эксцентриситет</td><td class="n">${nf(o.incl, 2)}° / ${o.ecc.toFixed(5)}</td></tr>
-        <tr><td>Период</td><td class="n">${nf(o.periodMin, 2)} мин · ${nf(o.nRevDay, 3)} об/сут</td></tr>
-        <tr><td>BSTAR (торможение)</td><td class="n">${o.bstar.toExponential(3)}</td></tr>
-        <tr><td>Эпоха элементов</td><td class="n ${ageDays > 7 ? 'warn' : ''}">${utc(o.epochMs).slice(0, 16)} · ${nf(Math.abs(ageDays), 1)} сут</td></tr>
-        <tr><td>3D-модель</td><td class="n">${m.generic ? '<span class="warn">условная</span>' : m.typical ? 'типовая для серии' : 'реальная'}</td></tr>
+          <span class="tags"><i style="background:${CLASS_COLORS[o.cls]}"></i>${CLASS_NAMES[o.cls]}${o.tags.filter((t) => TAG_NAMES[t]).map((t) => ` · ${TAG_NAMES[t]}`).join('')}${localized("</span></div>\n      </div>\n      <table class=\"ui-table trk-live\" id=\"trk-live\"></table>\n      <div class=\"trk-sec-h\"><span class=\"ui-micro\">Наземный трек · ±1,5 витка</span><span class=\"ui-micro\" id=\"trk-ll\"></span></div>\n      <canvas id=\"trk-map\" height=\"190\"></canvas>\n      <table class=\"ui-table\">\n        <tr><td>Перигей / апогей</td><td class=\"n\">", "</span></div>\n      </div>\n      <table class=\"ui-table trk-live\" id=\"trk-live\"></table>\n      <div class=\"trk-sec-h\"><span class=\"ui-micro\">Ground track · ±1.5 orbits</span><span class=\"ui-micro\" id=\"trk-ll\"></span></div>\n      <canvas id=\"trk-map\" height=\"190\"></canvas>\n      <table class=\"ui-table\">\n        <tr><td>Perigee / apogee</td><td class=\"n\">")}${nf(o.perigeeKm)} / ${nf(o.apogeeKm)}${localized(" км</td></tr>\n        <tr><td>Наклонение / эксцентриситет</td><td class=\"n\">", " km</td></tr>\n        <tr><td>Inclination / eccentricity</td><td class=\"n\">")}${nf(o.incl, 2)}° / ${o.ecc.toFixed(5)}${localized("</td></tr>\n        <tr><td>Период</td><td class=\"n\">", "</td></tr>\n        <tr><td>Period</td><td class=\"n\">")}${nf(o.periodMin, 2)}${localized(" мин · ", " min · ")}${nf(o.nRevDay, 3)}${localized(" об/сут</td></tr>\n        <tr><td>BSTAR (торможение)</td><td class=\"n\">", " rev/day</td></tr>\n        <tr><td>BSTAR (drag)</td><td class=\"n\">")}${o.bstar.toExponential(3)}${localized("</td></tr>\n        <tr><td>Эпоха элементов</td><td class=\"n ", "</td></tr>\n        <tr><td>Element epoch</td><td class=\"n ")}${ageDays > 7 ? 'warn' : ''}">${utc(o.epochMs).slice(0, 16)} · ${nf(Math.abs(ageDays), 1)}${localized(" сут</td></tr>\n        <tr><td>3D-модель</td><td class=\"n\">", " days</td></tr>\n        <tr><td>3D model</td><td class=\"n\">")}${m.generic ? localized("<span class=\"warn\">условная</span>", "<span class=\"warn\">illustrative</span>") : m.typical ? localized("типовая для серии", "representative of the series") : localized("реальная", "actual")}</td></tr>
       </table>
-      ${o.tags.includes('decay') || o.perigeeKm < 220 ? `<div class="trk-alert">Низкий перигей (${nf(o.perigeeKm)} км): объект тормозится атмосферой и в ближайшее время войдёт в неё.</div>` : ''}
-      <div class="trk-sec-h"><span class="ui-micro">Скрининг сближений · 24 ч · порог 50 км</span>
-        <button class="ui-btn sm ${st.screening ? 'is-on' : ''}" data-act="screen" ${st.screening ? 'disabled' : ''}>${I_TARGET}<span>${st.screening ? 'Идёт расчёт…' : ap ? 'Пересчитать' : 'Запустить'}</span></button></div>
-      <div id="trk-conj">${ap ? conjTable(ap) : `<p class="trk-note">Перебор всех объектов в пересекающейся высотной оболочке с шагом 20 с, уточнение минимума и проверка лучших кандидатов полным SGP4.</p>`}</div>`;
+      ${o.tags.includes('decay') || o.perigeeKm < 220 ? `${localized("<div class=\"trk-alert\">Низкий перигей (", "<div class=\"trk-alert\">Low perigee (")}${nf(o.perigeeKm)}${localized(" км): объект тормозится атмосферой и в ближайшее время войдёт в неё.</div>", " km): atmospheric drag is slowing the object, which will re-enter soon.</div>")}` : ''}${localized("\n      <div class=\"trk-sec-h\"><span class=\"ui-micro\">Скрининг сближений · 24 ч · порог 50 км</span>\n        <button class=\"ui-btn sm ", "\n      <div class=\"trk-sec-h\"><span class=\"ui-micro\">Conjunction screening · 24 h · 50 km threshold</span>\n        <button class=\"ui-btn sm ")}${st.screening ? 'is-on' : ''}" data-act="screen" ${st.screening ? 'disabled' : ''}>${I_TARGET}<span>${st.screening ? localized("Идёт расчёт…", "Calculating…") : ap ? localized("Пересчитать", "Recalculate") : localized("Запустить", "Run")}</span></button></div>
+      <div id="trk-conj">${ap ? conjTable(ap) : localized("<p class=\"trk-note\">Перебор всех объектов в пересекающейся высотной оболочке с шагом 20 с, уточнение минимума и проверка лучших кандидатов полным SGP4.</p>", "<p class=\"trk-note\">Searches all objects in an overlapping altitude shell at 20 s steps, refines the minimum and verifies the best candidates with full SGP4.</p>")}</div>`;
   }
 
   function conjTable(ap: NonNullable<typeof st.approaches>) {
-    const extra = `${ap.docked ? ` · исключено пристыкованных: ${ap.docked}` : ''}${ap.rejected ? ` · не подтверждено SGP4: ${ap.rejected}` : ''}`;
-    if (!ap.list.length) return `<p class="trk-note">Проверено ${nf(ap.screened)} объектов${extra}: сближений ближе 50 км за 24 ч не найдено.</p>`;
-    return `<p class="trk-note">Проверено ${nf(ap.screened)} объектов · ${utc(ap.at).slice(0, 16)}${extra}</p>
-      <table class="ui-table trk-conj"><tr><th>Объект</th><th>TCA, UTC</th><th class="n">Пролёт</th><th class="n">V отн.</th></tr>
-      ${ap.list.slice(0, 15).map((a) => `<tr data-norad="${a.o.norad}" class="click"><td><i style="background:${CLASS_COLORS[a.o.cls]}"></i>${esc(a.o.name)}</td>
-        <td class="ui-num">${utc(a.tcaMs).slice(5, 16)}</td><td class="n ${(a.sgpKm ?? a.missKm) < 5 ? 'warn' : ''}">${nf(a.sgpKm ?? a.missKm, 1)} км</td><td class="n">${nf(a.relKmS, 1)} км/с</td></tr>`).join('')}</table>`;
+    const extra = `${ap.docked ? `${localized(" · исключено пристыкованных: ", " · docked objects excluded: ")}${ap.docked}` : ''}${ap.rejected ? `${localized(" · не подтверждено SGP4: ", " · not confirmed by SGP4: ")}${ap.rejected}` : ''}`;
+    if (!ap.list.length) return `${localized("<p class=\"trk-note\">Проверено ", "<p class=\"trk-note\">Checked ")}${nf(ap.screened)}${localized(" объектов", " objects")}${extra}${localized(": сближений ближе 50 км за 24 ч не найдено.</p>", ": no conjunctions closer than 50 km found within 24 h.</p>")}`;
+    return `${localized("<p class=\"trk-note\">Проверено ", "<p class=\"trk-note\">Checked ")}${nf(ap.screened)}${localized(" объектов · ", " objects · ")}${utc(ap.at).slice(0, 16)}${extra}${localized("</p>\n      <table class=\"ui-table trk-conj\"><tr><th>Объект</th><th>TCA, UTC</th><th class=\"n\">Пролёт</th><th class=\"n\">V отн.</th></tr>\n      ", "</p>\n      <table class=\"ui-table trk-conj\"><tr><th>Object</th><th>TCA, UTC</th><th class=\"n\">Miss distance</th><th class=\"n\">Rel. V</th></tr>\n      ")}${ap.list.slice(0, 15).map((a) => `<tr data-norad="${a.o.norad}" class="click"><td><i style="background:${CLASS_COLORS[a.o.cls]}"></i>${esc(a.o.name)}</td>
+        <td class="ui-num">${utc(a.tcaMs).slice(5, 16)}</td><td class="n ${(a.sgpKm ?? a.missKm) < 5 ? 'warn' : ''}">${nf(a.sgpKm ?? a.missKm, 1)}${localized(" км</td><td class=\"n\">", " km</td><td class=\"n\">")}${nf(a.relKmS, 1)}${localized(" км/с</td></tr>", " km/s</td></tr>")}`).join('')}</table>`;
   }
 
   async function runScreening() {
@@ -421,7 +341,7 @@ export function initTracker(deps: TrackerDeps): TrackerController {
     const all = deps.getCatalog().objects;   // тот же массив, по которому шёл перебор (обновление каталога не сдвинет индексы)
     try {
     const { results, screened } = await screenConjunctions(o, all, start, {
-      onProgress: (f, n) => { const b = root.querySelector('[data-act="screen"] span'); if (b) b.textContent = `${Math.round(f * 100)}% из ${nf(n)}`; },
+      onProgress: (f, n) => { const b = root.querySelector('[data-act="screen"] span'); if (b) b.textContent = `${Math.round(f * 100)}${localized("% из ", "% of ")}${nf(n)}`; },
     });
     // Уточнение полным SGP4: поиск минимума в окне ±5 мин вокруг TCA модели Кеплер+J2
     // (у объектов с сильным торможением модели расходятся на десятки секунд), затем шаг 0,1 с.
@@ -506,35 +426,30 @@ export function initTracker(deps: TrackerDeps): TrackerController {
   function liveRows(o: OrbitalObject) {
     const date = deps.getDate();
     const s = sgp4(o, date);
-    if (!s) return `<tr><td>Состояние</td><td class="n warn">SGP4: объект сошёл с орбиты по модели</td></tr>`;
+    if (!s) return localized("<tr><td>Состояние</td><td class=\"n warn\">SGP4: объект сошёл с орбиты по модели</td></tr>", "<tr><td>State</td><td class=\"n warn\">SGP4: object has decayed according to the model</td></tr>");
     const gd = geodetic(s.r, date);
-    return `<tr><td>Высота</td><td class="n">${nf(gd.alt, 1)} км</td></tr>
-      <tr><td>Широта / долгота</td><td class="n">${gd.lat.toFixed(3)}° / ${gd.lon.toFixed(3)}°</td></tr>
-      <tr><td>Скорость (инерциальная)</td><td class="n">${nf(len(s.v), 3)} км/с</td></tr>
-      <tr><td>Дальность от центра Земли</td><td class="n">${nf(len(s.r), 1)} км</td></tr>`;
+    return `${localized("<tr><td>Высота</td><td class=\"n\">", "<tr><td>Altitude</td><td class=\"n\">")}${nf(gd.alt, 1)}${localized(" км</td></tr>\n      <tr><td>Широта / долгота</td><td class=\"n\">", " km</td></tr>\n      <tr><td>Latitude / longitude</td><td class=\"n\">")}${gd.lat.toFixed(3)}° / ${gd.lon.toFixed(3)}${localized("°</td></tr>\n      <tr><td>Скорость (инерциальная)</td><td class=\"n\">", "°</td></tr>\n      <tr><td>Speed (inertial)</td><td class=\"n\">")}${nf(len(s.v), 3)}${localized(" км/с</td></tr>\n      <tr><td>Дальность от центра Земли</td><td class=\"n\">", " km/s</td></tr>\n      <tr><td>Range from Earth’s center</td><td class=\"n\">")}${nf(len(s.r), 1)}${localized(" км</td></tr>", " km</td></tr>")}`;
   }
 
   // ---------------- МАЛЫЕ ТЕЛА ----------------
   function smallHtml() {
     const sb = deps.sb;
-    if (!sb) return `<div class="trk-empty"><p>Каталог малых тел не загружен.</p></div>`;
+    if (!sb) return localized("<div class=\"trk-empty\"><p>Каталог малых тел не загружен.</p></div>", "<div class=\"trk-empty\"><p>Small-body catalog not loaded.</p></div>");
     const counts = new Map<SbClass, number>();
     sb.bodies.forEach((b) => counts.set(b.cls, (counts.get(b.cls) ?? 0) + 1));
     return `
       <section class="trk-kpis">
         ${(Object.keys(SB_NAMES) as SbClass[]).filter((c) => counts.get(c)).map((c) => `<button class="kpi ${sb.isClassVisible(c) ? '' : 'off'}" data-sb="${c}"><i style="background:${SB_COLORS[c]}"></i><span class="ui-micro">${SB_NAMES[c]}</span><b class="ui-num">${nf(counts.get(c) ?? 0)}</b></button>`).join('')}
-        <button class="kpi ${sb.isClassVisible('nea-orbits') ? '' : 'off'}" data-sb="nea-orbits"><i style="background:linear-gradient(90deg,#ff6b2c,#73859e)"></i><span class="ui-micro">Орбиты NEA (форма)</span><b class="ui-num">${nf(sb.neaCount)}</b></button>
+        <button class="kpi ${sb.isClassVisible('nea-orbits') ? '' : 'off'}${localized("\" data-sb=\"nea-orbits\"><i style=\"background:linear-gradient(90deg,#ff6b2c,#73859e)\"></i><span class=\"ui-micro\">Орбиты NEA (форма)</span><b class=\"ui-num\">", "\" data-sb=\"nea-orbits\"><i style=\"background:linear-gradient(90deg,#ff6b2c,#73859e)\"></i><span class=\"ui-micro\">NEA orbit shapes</span><b class=\"ui-num\">")}${nf(sb.neaCount)}</b></button>
       </section>
-      <p class="trk-note">${nf(sb.bodies.length)} тел с полными оскулирующими элементами (MPC/JPL через Stellarium) — положение считается по Кеплеру на текущую дату. ${nf(sb.neaCount)} орбит околоземных астероидов показаны формой: цвет — минимальное расстояние пересечения орбит с Землёй (MOID), оранжевые ближе 0,05 а.е.</p>
-      <input class="ui-input" id="trk-sbq" placeholder="Поиск: Bennu, Apophis, Halley, 2I/Borisov…" autocomplete="off">
-      <div class="trk-sblist" id="trk-sblist">${sbRows('')}</div>`;
+      <p class="trk-note">${nf(sb.bodies.length)}${localized(" тел с полными оскулирующими элементами (MPC/JPL через Stellarium) — положение считается по Кеплеру на текущую дату. ", " bodies with complete osculating elements (MPC/JPL via Stellarium) — positions computed with Kepler’s equations for the current date. ")}${nf(sb.neaCount)}${localized(" орбит околоземных астероидов показаны формой: цвет — минимальное расстояние пересечения орбит с Землёй (MOID), оранжевые ближе 0,05 а.е.</p>\n      <input class=\"ui-input\" id=\"trk-sbq\" placeholder=\"Поиск: Bennu, Apophis, Halley, 2I/Borisov…\" autocomplete=\"off\">\n      <div class=\"trk-sblist\" id=\"trk-sblist\">", " near-Earth asteroid orbit shapes: color indicates minimum orbit intersection distance with Earth (MOID); orange orbits are closer than 0.05 AU.</p>\n      <input class=\"ui-input\" id=\"trk-sbq\" placeholder=\"Search: Bennu, Apophis, Halley, 2I/Borisov…\" autocomplete=\"off\">\n      <div class=\"trk-sblist\" id=\"trk-sblist\">")}${sbRows('')}</div>`;
   }
   function sbRows(q: string) {
     const sb = deps.sb!;
     const ql = q.toLowerCase();
     return sb.bodies.filter((b) => !ql || b.name.toLowerCase().includes(ql)).slice(0, 200).map((b) => `
       <button class="trk-sbrow" data-sbi="${b.idx}"><i style="background:${SB_COLORS[b.cls]}"></i><span class="nm">${esc(b.name)}</span>
-      <span class="ui-num r">${b.e < 1 ? nf(b.a, 2) + ' а.е.' : 'e ' + b.e.toFixed(3)}</span><span class="ui-micro">${SB_NAMES[b.cls]}</span>${b.model ? '<span class="ui-micro mdl">3D</span>' : ''}</button>`).join('');
+      <span class="ui-num r">${b.e < 1 ? nf(b.a, 2) + localized(" а.е.", " AU") : 'e ' + b.e.toFixed(3)}</span><span class="ui-micro">${SB_NAMES[b.cls]}</span>${b.model ? '<span class="ui-micro mdl">3D</span>' : ''}</button>`).join('');
   }
 
   // ---------------- события UI ----------------
@@ -577,8 +492,8 @@ export function initTracker(deps: TrackerDeps): TrackerController {
       applyFilters();
       frame();
     } catch {
-      label.textContent = 'Не удалось';
-      setTimeout(() => { label.textContent = 'Обновить'; btn.disabled = false; }, 2500);
+      label.textContent = localized("Не удалось", "Failed");
+      setTimeout(() => { label.textContent = localized("Обновить", "Refresh"); btn.disabled = false; }, 2500);
     }
   }
 
@@ -619,27 +534,27 @@ export function initTracker(deps: TrackerDeps): TrackerController {
       const out: { label: string; sub: string; kind: string; go: () => void }[] = [];
       for (const o of deps.getCatalog().objects) {
         if (o.name.toLowerCase().includes(ql) || String(o.norad) === ql) {
-          out.push({ label: o.name, sub: `NORAD ${o.norad} · ${CLASS_NAMES[o.cls]} · ${nf(o.perigeeKm)}–${nf(o.apogeeKm)} км`, kind: 'Орбита Земли', go: () => deps.track(o.norad) });
+          out.push({ label: o.name, sub: `NORAD ${o.norad} · ${CLASS_NAMES[o.cls]} · ${nf(o.perigeeKm)}–${nf(o.apogeeKm)}${localized(" км", " km")}`, kind: localized("Орбита Земли", "Earth orbit"), go: () => deps.track(o.norad) });
           if (out.length >= 12) break;
         }
       }
       if (deps.sb) for (const b of deps.sb.bodies) {
-        if (b.name.toLowerCase().includes(ql)) { out.push({ label: b.name, sub: SB_NAMES[b.cls], kind: 'Малое тело', go: () => deps.trackSmallBody(b) }); if (out.length >= 20) break; }
+        if (b.name.toLowerCase().includes(ql)) { out.push({ label: b.name, sub: SB_NAMES[b.cls], kind: localized("Малое тело", "Small body"), go: () => deps.trackSmallBody(b) }); if (out.length >= 20) break; }
       }
-      for (const [k, e] of Object.entries(EVENTS)) if (e.name.toLowerCase().includes(ql) || 'мусор обломки debris'.includes(ql)) out.push({ label: `Облако обломков ${e.name}`, sub: e.date, kind: 'Событие', go: () => { ctl.open('events'); if (st.eventShown !== 'evt:' + k) showEvent('evt:' + k); } });
+      for (const [k, e] of Object.entries(EVENTS)) if (e.name.toLowerCase().includes(ql) || localized("мусор обломки debris", "debris fragments").includes(ql)) out.push({ label: `${localized("Облако обломков ", "Debris cloud ")}${e.name}`, sub: e.date, kind: localized("Событие", "Event"), go: () => { ctl.open('events'); if (st.eventShown !== 'evt:' + k) showEvent('evt:' + k); } });
       return out;
     },
     infoHtml(o) {
       const m = modelFor(o);
       const danger = isLaunchDangerous(o);
       const lv = dangerLevel(o);
-      const lvLabel = ['', 'Низкий', 'Средний', 'Критический'][lv];
+      const lvLabel = ['', localized("Низкий", "Low"), localized("Средний", "Medium"), localized("Критический", "Critical")][lv];
       const lvColor = ['', '#ffa040', '#ff6020', '#ff1a1a'][lv];
       const dangerBlock = danger ? `
         <div class="trk-danger-alert" style="border-color:${lvColor}">
           <span class="dot-danger${lv === 3 ? ' crit' : lv === 2 ? ' med' : ' low'}"></span>
           <div>
-            <b style="color:${lvColor}">⚠ Опасен для запуска · уровень: ${lvLabel}</b>
+            <b style="color:${lvColor}${localized("\">⚠ Опасен для запуска · уровень: ", "\">⚠ Launch hazard · level: ")}${lvLabel}</b>
             <p>${dangerText(o)}</p>
           </div>
         </div>` : '';
@@ -647,18 +562,9 @@ export function initTracker(deps: TrackerDeps): TrackerController {
         <span class="ui-micro">NORAD ${o.norad} · ${esc(o.cospar)} · ${o.regime}</span>
         <div class="tags"><i style="background:${CLASS_COLORS[o.cls]}"></i>${CLASS_NAMES[o.cls]}${o.tags.filter((t) => TAG_NAMES[t]).slice(0, 3).map((t) => ` · ${TAG_NAMES[t]}`).join('')}</div>
         ${dangerBlock}
-        <table class="ui-table" id="trk-info-live">${liveRows(o)}</table>
-        <table class="ui-table">
-          <tr><td>Перигей / апогей</td><td class="n">${nf(o.perigeeKm)} / ${nf(o.apogeeKm)} км</td></tr>
-          <tr><td>Наклонение</td><td class="n">${nf(o.incl, 2)}°</td></tr>
-          <tr><td>Период</td><td class="n">${nf(o.periodMin, 1)} мин</td></tr>
-          <tr><td>BSTAR (сопр.)</td><td class="n">${o.bstar.toExponential(3)}</td></tr>
-          <tr><td>Эпоха TLE</td><td class="n">${utc(o.epochMs).slice(0, 16)}</td></tr>
-          <tr><td>3D-модель</td><td class="n">${m.generic ? 'условная' : m.typical ? 'типовая для серии' : 'реальная'}</td></tr>
+        <table class="ui-table" id="trk-info-live">${liveRows(o)}${localized("</table>\n        <table class=\"ui-table\">\n          <tr><td>Перигей / апогей</td><td class=\"n\">", "</table>\n        <table class=\"ui-table\">\n          <tr><td>Perigee / apogee</td><td class=\"n\">")}${nf(o.perigeeKm)} / ${nf(o.apogeeKm)}${localized(" км</td></tr>\n          <tr><td>Наклонение</td><td class=\"n\">", " km</td></tr>\n          <tr><td>Inclination</td><td class=\"n\">")}${nf(o.incl, 2)}${localized("°</td></tr>\n          <tr><td>Период</td><td class=\"n\">", "°</td></tr>\n          <tr><td>Period</td><td class=\"n\">")}${nf(o.periodMin, 1)}${localized(" мин</td></tr>\n          <tr><td>BSTAR (сопр.)</td><td class=\"n\">", " min</td></tr>\n          <tr><td>BSTAR (drag)</td><td class=\"n\">")}${o.bstar.toExponential(3)}${localized("</td></tr>\n          <tr><td>Эпоха TLE</td><td class=\"n\">", "</td></tr>\n          <tr><td>TLE epoch</td><td class=\"n\">")}${utc(o.epochMs).slice(0, 16)}${localized("</td></tr>\n          <tr><td>3D-модель</td><td class=\"n\">", "</td></tr>\n          <tr><td>3D model</td><td class=\"n\">")}${m.generic ? localized("условная", "illustrative") : m.typical ? localized("типовая для серии", "representative of the series") : localized("реальная", "actual")}</td></tr>
         </table>
-        <p class="trk-note">${m.generic ? m.note[0].toUpperCase() + m.note.slice(1) + '. ' : ''}Модель увеличена для видимости; положение — SGP4 по элементам GP.</p>
-        <div class="trk-ev-act"><button class="ui-btn primary" data-trk-open="object">Сопровождение и сближения</button></div>
-      </div>`;
+        <p class="trk-note">${m.generic ? m.note[0].toUpperCase() + m.note.slice(1) + '. ' : ''}${localized("Модель увеличена для видимости; положение — SGP4 по элементам GP.</p>\n        <div class=\"trk-ev-act\"><button class=\"ui-btn primary\" data-trk-open=\"object\">Сопровождение и сближения</button></div>\n      </div>", "Model enlarged for visibility; position calculated by SGP4 from GP elements.</p>\n        <div class=\"trk-ev-act\"><button class=\"ui-btn primary\" data-trk-open=\"object\">Tracking and conjunctions</button></div>\n      </div>")}`;
     },
     updateInfo(o) { const el = document.getElementById('trk-info-live'); if (el) el.innerHTML = liveRows(o); },
   };

@@ -1,3 +1,4 @@
+import { localized } from './i18n';
 import * as A from 'astronomy-engine';
 import * as satellite from 'satellite.js';
 import type { State } from './ephemeris';
@@ -164,13 +165,13 @@ export interface SurveyBandMeta {
 }
 
 export const DEFAULT_SURVEY_BANDS: SurveyBandMeta[] = [
-  { id: 'D1', title: 'SPHEREx D1', lambdaMinUm: 0.75, lambdaMaxUm: 1.10, skyCoveragePct: 99.92, tilesCount: 503180, channels: 17, scienceFocus: 'Звёзды, красные смещения галактик, силикаты', accent: '#6ec6ff' },
-  { id: 'D2', title: 'SPHEREx D2', lambdaMinUm: 1.10, lambdaMaxUm: 1.62, skyCoveragePct: 99.87, tilesCount: 503180, channels: 17, scienceFocus: 'Космическая инфляция, H₂O-лёд (1.5 мкм), CH₄', accent: '#5be4d2' },
-  { id: 'D3', title: 'SPHEREx D3', lambdaMinUm: 1.63, lambdaMaxUm: 2.41, skyCoveragePct: 99.52, tilesCount: 503180, channels: 17, scienceFocus: 'Галактическая пыль, метановые полосы, ледяные миры', accent: '#8ef59d' },
-  { id: 'D4', title: 'SPHEREx D4', lambdaMinUm: 2.42, lambdaMaxUm: 3.82, skyCoveragePct: 99.61, tilesCount: 503180, channels: 17, scienceFocus: 'Водяной лёд (3.05 мкм) и органика/PAH (3.3 мкм)', accent: '#ffd36b' },
-  { id: 'D5', title: 'SPHEREx D5', lambdaMinUm: 3.83, lambdaMaxUm: 4.41, skyCoveragePct: 99.87, tilesCount: 503180, channels: 17, scienceFocus: 'Сухой лёд CO₂ (4.27 мкм) и холодные объекты', accent: '#ff9654' },
-  { id: 'D6', title: 'SPHEREx D6', lambdaMinUm: 4.42, lambdaMaxUm: 5.00, skyCoveragePct: 99.89, tilesCount: 503180, channels: 17, scienceFocus: 'CO-лёд (4.67 мкм), коричневые карлики, Planet X', accent: '#ff5d7a' },
-  { id: 'color', title: 'SPHEREx QR2 Color', lambdaMinUm: 0.75, lambdaMaxUm: 5.00, skyCoveragePct: 99.99, tilesCount: 503180, channels: 102, scienceFocus: 'Полный 102-канальный ИК-куб всего неба', accent: '#e0b0ff' },
+  { id: 'D1', title: 'SPHEREx D1', lambdaMinUm: 0.75, lambdaMaxUm: 1.10, skyCoveragePct: 99.92, tilesCount: 503180, channels: 17, scienceFocus: localized("Звёзды, красные смещения галактик, силикаты", "Stars, galaxy redshifts, silicates"), accent: '#6ec6ff' },
+  { id: 'D2', title: 'SPHEREx D2', lambdaMinUm: 1.10, lambdaMaxUm: 1.62, skyCoveragePct: 99.87, tilesCount: 503180, channels: 17, scienceFocus: localized("Космическая инфляция, H₂O-лёд (1.5 мкм), CH₄", "Cosmic inflation, H₂O ice (1.5 μm), CH₄"), accent: '#5be4d2' },
+  { id: 'D3', title: 'SPHEREx D3', lambdaMinUm: 1.63, lambdaMaxUm: 2.41, skyCoveragePct: 99.52, tilesCount: 503180, channels: 17, scienceFocus: localized("Галактическая пыль, метановые полосы, ледяные миры", "Galactic dust, methane bands, icy worlds"), accent: '#8ef59d' },
+  { id: 'D4', title: 'SPHEREx D4', lambdaMinUm: 2.42, lambdaMaxUm: 3.82, skyCoveragePct: 99.61, tilesCount: 503180, channels: 17, scienceFocus: localized("Водяной лёд (3.05 мкм) и органика/PAH (3.3 мкм)", "Water ice (3.05 μm) and organics/PAH (3.3 μm)"), accent: '#ffd36b' },
+  { id: 'D5', title: 'SPHEREx D5', lambdaMinUm: 3.83, lambdaMaxUm: 4.41, skyCoveragePct: 99.87, tilesCount: 503180, channels: 17, scienceFocus: localized("Сухой лёд CO₂ (4.27 мкм) и холодные объекты", "CO₂ ice (4.27 μm) and cold objects"), accent: '#ff9654' },
+  { id: 'D6', title: 'SPHEREx D6', lambdaMinUm: 4.42, lambdaMaxUm: 5.00, skyCoveragePct: 99.89, tilesCount: 503180, channels: 17, scienceFocus: localized("CO-лёд (4.67 мкм), коричневые карлики, Planet X", "CO ice (4.67 μm), brown dwarfs, Planet X"), accent: '#ff5d7a' },
+  { id: 'color', title: 'SPHEREx QR2 Color', lambdaMinUm: 0.75, lambdaMaxUm: 5.00, skyCoveragePct: 99.99, tilesCount: 503180, channels: 102, scienceFocus: localized("Полный 102-канальный ИК-куб всего неба", "Complete 102-channel infrared all-sky cube"), accent: '#e0b0ff' },
 ];
 
 export async function fetchLiveSurveyArchive(): Promise<{ bands: SurveyBandMeta[]; live: boolean; releaseDate: string }> {
@@ -259,51 +260,51 @@ export interface SpectralTargetMeta {
 export const SPECTRAL_TARGETS: SpectralTargetMeta[] = [
   {
     id: 'planet-x',
-    name: 'Planet X (Гипотеза / ИК-кандидат)',
-    subtitle: 'Холодный ледяной гигант · ~440 а.е. · T ≈ 42 K',
+    name: localized("Planet X (Гипотеза / ИК-кандидат)", "Planet X (hypothesis / infrared candidate)"),
+    subtitle: localized("Холодный ледяной гигант · ~440 а.е. · T ≈ 42 K", "Cold ice giant · ~440 AU · T ≈42 K"),
     tempK: 42,
-    summary: 'В оптике почти невидим (V ≈ 22.5), но в каналах D5–D6 (3.8–5.0 мкм) выделяется тепловым хвостом и глубокими полосами поглощения метана (CH₄) и водяного льда (H₂O).',
-    keyLines: ['CH₄ (1.66, 2.3, 3.3 мкм)', 'H₂O-лёд (3.05 мкм)', 'Тепловое ИК-избыточное свечение (4.5–5.0 мкм)'],
+    summary: localized("В оптике почти невидим (V ≈ 22.5), но в каналах D5–D6 (3.8–5.0 мкм) выделяется тепловым хвостом и глубокими полосами поглощения метана (CH₄) и водяного льда (H₂O).", "Nearly invisible in optical light (V ≈22.5), but stands out in D5–D6 (3.8–5.0 μm) through its thermal tail and deep methane (CH₄) and water-ice (H₂O) absorption bands."),
+    keyLines: [localized("CH₄ (1.66, 2.3, 3.3 мкм)", "CH₄ (1.66, 2.3, 3.3 μm)"), localized("H₂O-лёд (3.05 мкм)", "H₂O ice (3.05 μm)"), localized("Тепловое ИК-избыточное свечение (4.5–5.0 мкм)", "Thermal infrared excess (4.5–5.0 μm)")],
   },
   {
     id: 'europa',
-    name: 'Европа (подлёдный океан)',
-    subtitle: 'Ледяная луна Юпитера · D4–D5 маркеры льда',
+    name: localized("Европа (подлёдный океан)", "Europa (subsurface ocean)"),
+    subtitle: localized("Ледяная луна Юпитера · D4–D5 маркеры льда", "Jupiter’s icy moon · D4–D5 ice markers"),
     tempK: 102,
-    summary: 'Глубокие провалы поглощения кристаллического водяного льда на 1.5, 2.0 и 3.05 мкм плюс примесь CO₂-льда на 4.27 мкм.',
-    keyLines: ['H₂O-лёд (1.50 мкм)', 'H₂O-лёд (2.02 мкм)', 'H₂O-лёд (3.05 мкм)', 'CO₂-лёд (4.27 мкм)'],
+    summary: localized("Глубокие провалы поглощения кристаллического водяного льда на 1.5, 2.0 и 3.05 мкм плюс примесь CO₂-льда на 4.27 мкм.", "Deep crystalline water-ice absorption at 1.5, 2.0 and 3.05 μm, with CO₂ ice at 4.27 μm."),
+    keyLines: [localized("H₂O-лёд (1.50 мкм)", "H₂O ice (1.50 μm)"), localized("H₂O-лёд (2.02 мкм)", "H₂O ice (2.02 μm)"), localized("H₂O-лёд (3.05 мкм)", "H₂O ice (3.05 μm)"), localized("CO₂-лёд (4.27 мкм)", "CO₂ ice (4.27 μm)")],
   },
   {
     id: 'mars',
-    name: 'Марс (атмосфера и минералы)',
-    subtitle: 'Оксиды железа + мощная полоса CO₂ на 4.27 мкм',
+    name: localized("Марс (атмосфера и минералы)", "Mars (atmosphere and minerals)"),
+    subtitle: localized("Оксиды железа + мощная полоса CO₂ на 4.27 мкм", "Iron oxides + strong CO₂ band at 4.27 μm"),
     tempK: 210,
-    summary: 'Высокое отражение пыли в ближнем ИК (D1–D2), гидратированные минералы у 3.0 мкм и характерный глубочайший минимум CO₂ на 2.0 и 4.27 мкм.',
-    keyLines: ['CO₂ (2.01 мкм)', 'H₂O / OH (2.95 мкм)', 'CO₂ (4.27 мкм)', 'CO (4.67 мкм)'],
+    summary: localized("Высокое отражение пыли в ближнем ИК (D1–D2), гидратированные минералы у 3.0 мкм и характерный глубочайший минимум CO₂ на 2.0 и 4.27 мкм.", "Strong dust reflectance in near infrared (D1–D2), hydrated minerals near 3.0 μm and characteristic deep CO₂ minima at 2.0 and 4.27 μm."),
+    keyLines: [localized("CO₂ (2.01 мкм)", "CO₂ (2.01 μm)"), localized("H₂O / OH (2.95 мкм)", "H₂O / OH (2.95 μm)"), localized("CO₂ (4.27 мкм)", "CO₂ (4.27 μm)"), localized("CO (4.67 мкм)", "CO (4.67 μm)")],
   },
   {
     id: 'titan',
-    name: 'Титан (метановая дымка)',
-    subtitle: 'Плотная азотно-метановая атмосфера и органика',
+    name: localized("Титан (метановая дымка)", "Titan (methane haze)"),
+    subtitle: localized("Плотная азотно-метановая атмосфера и органика", "Dense nitrogen–methane atmosphere and organics"),
     tempK: 94,
-    summary: 'Окна прозрачности метана в D1–D3 и широкое поглощение толинов и углеводородов (CH₄ / C₂H₆) на 3.3–3.5 мкм.',
-    keyLines: ['CH₄ окно (1.58 мкм)', 'CH₄ (2.30 мкм)', 'Органика / CH₄ (3.32 мкм)'],
+    summary: localized("Окна прозрачности метана в D1–D3 и широкое поглощение толинов и углеводородов (CH₄ / C₂H₆) на 3.3–3.5 мкм.", "Methane transparency windows in D1–D3 and broad tholin and hydrocarbon (CH₄ / C₂H₆) absorption at 3.3–3.5 μm."),
+    keyLines: [localized("CH₄ окно (1.58 мкм)", "CH₄ window (1.58 μm)"), localized("CH₄ (2.30 мкм)", "CH₄ (2.30 μm)"), localized("Органика / CH₄ (3.32 мкм)", "Organics / CH₄ (3.32 μm)")],
   },
   {
     id: 'pluto',
-    name: 'Плутон (пояс Койпера)',
-    subtitle: 'Азотный, метановый и CO-лёд на 39 а.е.',
+    name: localized("Плутон (пояс Койпера)", "Pluto (Kuiper Belt)"),
+    subtitle: localized("Азотный, метановый и CO-лёд на 39 а.е.", "Nitrogen, methane and CO ice at 39 AU"),
     tempK: 44,
-    summary: 'Богатый набор летучих льдов: метан на 1.66 и 2.3 мкм, водяной лёд на 3.05 мкм и отчётливая полоса угарного льда CO на 4.67 мкм.',
-    keyLines: ['CH₄-лёд (1.66 мкм)', 'N₂/CH₄ (2.15 мкм)', 'H₂O (3.05 мкм)', 'CO-лёд (4.67 мкм)'],
+    summary: localized("Богатый набор летучих льдов: метан на 1.66 и 2.3 мкм, водяной лёд на 3.05 мкм и отчётливая полоса угарного льда CO на 4.67 мкм.", "A rich set of volatile ices: methane at 1.66 and 2.3 μm, water ice at 3.05 μm and a distinct CO-ice band at 4.67 μm."),
+    keyLines: [localized("CH₄-лёд (1.66 мкм)", "CH₄ ice (1.66 μm)"), localized("N₂/CH₄ (2.15 мкм)", "N₂/CH₄ (2.15 μm)"), localized("H₂O (3.05 мкм)", "H₂O (3.05 μm)"), localized("CO-лёд (4.67 мкм)", "CO ice (4.67 μm)")],
   },
   {
     id: 'galactic-center',
-    name: 'Центр Млечного Пути / Межзвёздные льды',
-    subtitle: 'Молекулярные облака, PAH и протопланетные диски',
+    name: localized("Центр Млечного Пути / Межзвёздные льды", "Milky Way center / Interstellar ices"),
+    subtitle: localized("Молекулярные облака, PAH и протопланетные диски", "Molecular clouds, PAHs and protoplanetary disks"),
     tempK: 150,
-    summary: 'Ключевая научная цель SPHEREx: пик излучения полициклических ароматических углеводородов (PAH 3.29 мкм) и глубокое поглощение космических льдов H₂O, CO₂ и CO.',
-    keyLines: ['H₂O-лёд (3.05 мкм)', 'Органика PAH (3.29 мкм)', 'CO₂-лёд (4.27 мкм)', 'CO-лёд (4.67 мкм)'],
+    summary: localized("Ключевая научная цель SPHEREx: пик излучения полициклических ароматических углеводородов (PAH 3.29 мкм) и глубокое поглощение космических льдов H₂O, CO₂ и CO.", "A key SPHEREx science objective: polycyclic aromatic hydrocarbon emission (PAH 3.29 μm) and deep absorption by cosmic H₂O, CO₂ and CO ices."),
+    keyLines: [localized("H₂O-лёд (3.05 мкм)", "H₂O ice (3.05 μm)"), localized("Органика PAH (3.29 мкм)", "PAH organics (3.29 μm)"), localized("CO₂-лёд (4.27 мкм)", "CO₂ ice (4.27 μm)"), localized("CO-лёд (4.67 мкм)", "CO ice (4.67 μm)")],
   },
 ];
 
@@ -342,28 +343,28 @@ export function generateSpectrum(targetId: SpectralTargetId): SpectralChannel[] 
         - gaussDip(um, 3.05, 0.14, 0.28)
         - gaussDip(um, 3.35, 0.12, 0.34);
       if (near(um, 1.66)) feature = 'CH₄';
-      else if (near(um, 3.05)) feature = 'H₂O лёд';
-      else if (near(um, 3.35)) feature = 'CH₄ (3.3 мкм)';
-      else if (near(um, 4.70)) feature = 'ИК-избыток Planet X';
+      else if (near(um, 3.05)) feature = localized("H₂O лёд", "H₂O ice");
+      else if (near(um, 3.35)) feature = localized("CH₄ (3.3 мкм)", "CH₄ (3.3 μm)");
+      else if (near(um, 4.70)) feature = localized("ИК-избыток Planet X", "Planet X infrared excess");
     } else if (targetId === 'europa') {
       flux = 0.92 - 0.08 * t
         - gaussDip(um, 1.50, 0.09, 0.38)
         - gaussDip(um, 2.02, 0.10, 0.45)
         - gaussDip(um, 3.05, 0.18, 0.72)
         - gaussDip(um, 4.27, 0.07, 0.22);
-      if (near(um, 1.50)) feature = 'H₂O 1.5 мкм';
-      else if (near(um, 2.02)) feature = 'H₂O 2.0 мкм';
-      else if (near(um, 3.05)) feature = 'H₂O лёд 3.05 мкм';
-      else if (near(um, 4.27)) feature = 'CO₂ лёд';
+      if (near(um, 1.50)) feature = localized("H₂O 1.5 мкм", "H₂O 1.5 μm");
+      else if (near(um, 2.02)) feature = localized("H₂O 2.0 мкм", "H₂O 2.0 μm");
+      else if (near(um, 3.05)) feature = localized("H₂O лёд 3.05 мкм", "H₂O ice 3.05 μm");
+      else if (near(um, 4.27)) feature = localized("CO₂ лёд", "CO₂ ice");
     } else if (targetId === 'mars') {
       flux = 0.88 - 0.15 * Math.max(0, t - 0.3) + 0.12 * Math.max(0, um - 3.9)
         - gaussDip(um, 2.01, 0.07, 0.36)
         - gaussDip(um, 2.95, 0.15, 0.24)
         - gaussDip(um, 4.27, 0.11, 0.68)
         - gaussDip(um, 4.67, 0.06, 0.15);
-      if (near(um, 2.01)) feature = 'CO₂ (2.0 мкм)';
+      if (near(um, 2.01)) feature = localized("CO₂ (2.0 мкм)", "CO₂ (2.0 μm)");
       else if (near(um, 2.95)) feature = 'OH / H₂O';
-      else if (near(um, 4.27)) feature = 'CO₂ (4.27 мкм)';
+      else if (near(um, 4.27)) feature = localized("CO₂ (4.27 мкм)", "CO₂ (4.27 μm)");
       else if (near(um, 4.67)) feature = 'CO';
     } else if (targetId === 'titan') {
       flux = 0.74 - 0.18 * t
@@ -372,9 +373,9 @@ export function generateSpectrum(targetId: SpectralTargetId): SpectralChannel[] 
         - gaussDip(um, 1.75, 0.10, 0.34)
         - gaussDip(um, 2.30, 0.14, 0.45)
         - gaussDip(um, 3.35, 0.16, 0.48);
-      if (near(um, 1.58)) feature = 'Окно CH₄';
+      if (near(um, 1.58)) feature = localized("Окно CH₄", "CH₄ window");
       else if (near(um, 2.30)) feature = 'CH₄';
-      else if (near(um, 3.35)) feature = 'Толины / C₂H₆';
+      else if (near(um, 3.35)) feature = localized("Толины / C₂H₆", "Tholins / C₂H₆");
     } else if (targetId === 'pluto') {
       flux = 0.78 - 0.12 * t
         - gaussDip(um, 1.66, 0.07, 0.32)
@@ -383,9 +384,9 @@ export function generateSpectrum(targetId: SpectralTargetId): SpectralChannel[] 
         - gaussDip(um, 3.05, 0.14, 0.42)
         - gaussDip(um, 4.67, 0.07, 0.28);
       if (near(um, 1.66)) feature = 'CH₄';
-      else if (near(um, 2.15)) feature = 'N₂ лёд';
-      else if (near(um, 3.05)) feature = 'H₂O лёд';
-      else if (near(um, 4.67)) feature = 'CO лёд';
+      else if (near(um, 2.15)) feature = localized("N₂ лёд", "N₂ ice");
+      else if (near(um, 3.05)) feature = localized("H₂O лёд", "H₂O ice");
+      else if (near(um, 4.67)) feature = localized("CO лёд", "CO ice");
     } else {
       // Galactic center / interstellar ices & PAHs
       flux = 0.48 + 0.38 * Math.pow(t, 1.2)
@@ -393,10 +394,10 @@ export function generateSpectrum(targetId: SpectralTargetId): SpectralChannel[] 
         - gaussDip(um, 3.05, 0.13, 0.44)
         - gaussDip(um, 4.27, 0.07, 0.29)
         - gaussDip(um, 4.67, 0.06, 0.24);
-      if (near(um, 3.05)) feature = 'H₂O лёд (погл.)';
-      else if (near(um, 3.29)) feature = 'PAH органика (пик)';
-      else if (near(um, 4.27)) feature = 'CO₂ лёд';
-      else if (near(um, 4.67)) feature = 'CO лёд';
+      if (near(um, 3.05)) feature = localized("H₂O лёд (погл.)", "H₂O ice (absorption)");
+      else if (near(um, 3.29)) feature = localized("PAH органика (пик)", "PAH organics (peak)");
+      else if (near(um, 4.27)) feature = localized("CO₂ лёд", "CO₂ ice");
+      else if (near(um, 4.67)) feature = localized("CO лёд", "CO ice");
     }
 
     // Небольшой детерминированный приборный шум (реалистичный S/N)

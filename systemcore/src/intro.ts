@@ -1,3 +1,4 @@
+import { localized } from './i18n';
 // Интро на главной: надпись SOLAR EXPLORER собирается из «звёзд» неба,
 // под ней прорисовывается волосяная линия и подзаголовок. По клику / клавише / колесу
 // или через ~7 с бездействия буквы снова рассыпаются в звёзды, и оверлей удаляется.
@@ -5,7 +6,7 @@
 import './intro.css';
 
 const TITLE = 'SOLAR EXPLORER';
-const SUBTITLE = 'ОБСЕРВАТОРИЯ СОЛНЕЧНОЙ СИСТЕМЫ  ·  SPHEREx × PLANET X  ·  ПОЛОЖЕНИЯ НА ТЕКУЩИЙ МОМЕНТ';
+const SUBTITLE = localized("ОБСЕРВАТОРИЯ СОЛНЕЧНОЙ СИСТЕМЫ  ·  SPHEREx × PLANET X  ·  ПОЛОЖЕНИЯ НА ТЕКУЩИЙ МОМЕНТ", "SOLAR SYSTEM OBSERVATORY  ·  SPHEREx × PLANET X  ·  CURRENT POSITIONS");
 const FORM_S = 2.6;     // время сборки букв
 const IDLE_S = 7.5;     // после сборки — автоматический уход
 const LEAVE_S = 1.5;    // рассыпание
@@ -47,14 +48,7 @@ export function startIntro() {
     <div class="in-text">
       <h1 class="in-sr">${TITLE}</h1>
       <div class="in-rule"><i></i></div>
-      <div class="in-sub">${SUBTITLE}</div>
-      <div class="in-meta">
-        <span>EPOCH <b class="in-epoch"></b></span>
-        <span>ASTRONOMY ENGINE · JPL HORIZONS · CELESTRAK · SGP4</span>
-      </div>
-      <button type="button" class="in-enter">ВОЙТИ <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" /></svg></button>
-      <div class="in-hint">клик · любая клавиша · колесо мыши</div>
-    </div>`;
+      <div class="in-sub">${SUBTITLE}${localized("</div>\n      <div class=\"in-meta\">\n        <span>EPOCH <b class=\"in-epoch\"></b></span>\n        <span>ASTRONOMY ENGINE · JPL HORIZONS · CELESTRAK · SGP4</span>\n      </div>\n      <button type=\"button\" class=\"in-enter\">ВОЙТИ <svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4.5 12 8l-3.5 3.5\" /></svg></button>\n      <div class=\"in-hint\">клик · любая клавиша · колесо мыши</div>\n    </div>", "</div>\n      <div class=\"in-meta\">\n        <span>EPOCH <b class=\"in-epoch\"></b></span>\n        <span>ASTRONOMY ENGINE · JPL HORIZONS · CELESTRAK · SGP4</span>\n      </div>\n      <button type=\"button\" class=\"in-enter\">ENTER <svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4.5 12 8l-3.5 3.5\" /></svg></button>\n      <div class=\"in-hint\">click · any key · mouse wheel</div>\n    </div>")}`;
   document.body.appendChild(root);
   document.body.classList.add('intro-on');
   (root.querySelector('.in-epoch') as HTMLElement).textContent = new Date().toISOString().slice(0, 16).replace('T', ' ') + ' UTC';

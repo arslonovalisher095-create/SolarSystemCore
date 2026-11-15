@@ -1,3 +1,4 @@
+import { localized } from './i18n';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { initI18n, setLang, getLang, onLangChange } from './i18n';
@@ -283,7 +284,7 @@ async function loadSpacecraft() {
         color: '#5be4d2',
         agency: sc.agency,
         launch: sc.launch,
-        description: `${sc.description} Орбита рассчитывается в реальном времени по TLE (${sc.horizons}, SGP4).`,
+        description: `${sc.description}${localized(" Орбита рассчитывается в реальном времени по TLE (", " Orbit calculated in real time from TLE (")}${sc.horizons}, SGP4).`,
       };
       const group = new THREE.Group();
       scene.add(group);
@@ -327,7 +328,7 @@ async function loadSpacecraft() {
       const res = await fetch(`data/spacecraft/${sc.id}.json`);
       if (!res.ok || !res.headers.get('content-type')?.includes('json')) continue;
       const track = (await res.json()) as Track;
-      const def: BodyDef = { id: sc.id, name: sc.name, kind: 'spacecraft', radiusKm: 0.005, massKg: sc.massKg, color: '#cfd8dc', agency: sc.agency, launch: sc.launch, description: `${sc.description} Траектория — по данным JPL Horizons (ID ${sc.horizons}).` };
+      const def: BodyDef = { id: sc.id, name: sc.name, kind: 'spacecraft', radiusKm: 0.005, massKg: sc.massKg, color: '#cfd8dc', agency: sc.agency, launch: sc.launch, description: `${sc.description}${localized(" Траектория — по данным JPL Horizons (ID ", " Trajectory from JPL Horizons (ID ")}${sc.horizons}).` };
       const group = new THREE.Group();
       scene.add(group);
       const e: Entity = { def, state: { pos: [0, 0, 0], vel: [0, 0, 0] }, group, label: null as unknown as HTMLDivElement, track };
@@ -536,9 +537,9 @@ interface LaunchSite {
 }
 
 const LAUNCH_SITES: LaunchSite[] = [
-  { name: 'Мыс Канаверал', latDeg: 28.5, lonDeg: -80.6, inclDeg: 28.5, altKm: 400, color: '#00ff88', label: 'КК · 28.5°' },
-  { name: 'Байконур', latDeg: 45.9, lonDeg: 63.3, inclDeg: 51.6, altKm: 420, color: '#44ff44', label: 'БК · 51.6°' },
-  { name: 'Ванденберг', latDeg: 34.7, lonDeg: -120.6, inclDeg: 97.8, altKm: 500, color: '#88ff00', label: 'ВФБ · 97.8°' },
+  { name: localized("Мыс Канаверал", "Cape Canaveral"), latDeg: 28.5, lonDeg: -80.6, inclDeg: 28.5, altKm: 400, color: '#00ff88', label: localized("КК · 28.5°", "CC · 28.5°") },
+  { name: localized("Байконур", "Baikonur"), latDeg: 45.9, lonDeg: 63.3, inclDeg: 51.6, altKm: 420, color: '#44ff44', label: localized("БК · 51.6°", "BK · 51.6°") },
+  { name: localized("Ванденберг", "Vandenberg"), latDeg: 34.7, lonDeg: -120.6, inclDeg: 97.8, altKm: 500, color: '#88ff00', label: localized("ВФБ · 97.8°", "VAFB · 97.8°") },
 ];
 
 function createLaunchCorridors() {
@@ -631,23 +632,7 @@ function selectGalaxy() {
   controls.minDistance = 0;
   flight = { from: [...originKm], t0: performance.now(), dur: 4500, d0: camera.position.length(), d1: 4.5e7 };
   info.classList.remove('hidden');
-  info.innerHTML = `<button class="close" onclick="location.hash='#/home'">✕</button>
-    <h1>Milky Way</h1><div class="kind">Галактика · Млечный Путь</div>
-    <p>Наша галактика — спиральная галактика с перемычкой. Солнечная система расположена в рукаве Ориона, примерно на двух третях радиуса от центра.</p>
-    <table>
-      <tr><td>Диаметр диска</td><td>≈ 100 000 св. лет</td></tr>
-      <tr><td>Толщина диска</td><td>≈ 1 000 св. лет</td></tr>
-      <tr><td>Число звёзд</td><td>100–400 млрд</td></tr>
-      <tr><td>Возраст</td><td>≈ 13,6 млрд лет</td></tr>
-      <tr><td>Масса (с тёмной материей)</td><td>≈ 1–2 трлн M☉</td></tr>
-      <tr><td>Расстояние от Солнца до центра</td><td>≈ 26 000 св. лет</td></tr>
-      <tr><td>Оборот Солнца вокруг центра</td><td>≈ 230 млн лет</td></tr>
-      <tr><td>Скорость Солнца</td><td>≈ 230 км/с</td></tr>
-      <tr><td>Чёрная дыра в центре</td><td>Sagittarius A*, ≈ 4,3 млн M☉</td></tr>
-    </table>
-    <p class="photos-note" style="margin-top:12px">Масштаб на экране условный.</p>
-    <div class="photos-title">ФОТО NASA</div>
-    <div id="nasa-photos" class="photos"><span class="photos-note">Загрузка…</span></div>`;
+  info.innerHTML = localized("<button class=\"close\" onclick=\"location.hash='#/home'\">✕</button>\n    <h1>Milky Way</h1><div class=\"kind\">Галактика · Млечный Путь</div>\n    <p>Наша галактика — спиральная галактика с перемычкой. Солнечная система расположена в рукаве Ориона, примерно на двух третях радиуса от центра.</p>\n    <table>\n      <tr><td>Диаметр диска</td><td>≈ 100 000 св. лет</td></tr>\n      <tr><td>Толщина диска</td><td>≈ 1 000 св. лет</td></tr>\n      <tr><td>Число звёзд</td><td>100–400 млрд</td></tr>\n      <tr><td>Возраст</td><td>≈ 13,6 млрд лет</td></tr>\n      <tr><td>Масса (с тёмной материей)</td><td>≈ 1–2 трлн M☉</td></tr>\n      <tr><td>Расстояние от Солнца до центра</td><td>≈ 26 000 св. лет</td></tr>\n      <tr><td>Оборот Солнца вокруг центра</td><td>≈ 230 млн лет</td></tr>\n      <tr><td>Скорость Солнца</td><td>≈ 230 км/с</td></tr>\n      <tr><td>Чёрная дыра в центре</td><td>Sagittarius A*, ≈ 4,3 млн M☉</td></tr>\n    </table>\n    <p class=\"photos-note\" style=\"margin-top:12px\">Масштаб на экране условный.</p>\n    <div class=\"photos-title\">ФОТО NASA</div>\n    <div id=\"nasa-photos\" class=\"photos\"><span class=\"photos-note\">Загрузка…</span></div>", "<button class=\"close\" onclick=\"location.hash='#/home'\">✕</button>\n    <h1>Milky Way</h1><div class=\"kind\">Galaxy · Milky Way</div>\n    <p>Our galaxy is a barred spiral galaxy. The Solar System is in the Orion Arm, roughly two-thirds of the radius from the center.</p>\n    <table>\n      <tr><td>Disk diameter</td><td>≈100,000 light-years</td></tr>\n      <tr><td>Disk thickness</td><td>≈1,000 light-years</td></tr>\n      <tr><td>Number of stars</td><td>100–400 billion</td></tr>\n      <tr><td>Age</td><td>≈13.6 billion years</td></tr>\n      <tr><td>Mass (including dark matter)</td><td>≈1–2 trillion M☉</td></tr>\n      <tr><td>Sun–center distance</td><td>≈26,000 light-years</td></tr>\n      <tr><td>Sun’s orbital period</td><td>≈230 million years</td></tr>\n      <tr><td>Sun’s speed</td><td>≈230 km/s</td></tr>\n      <tr><td>Central black hole</td><td>Sagittarius A*, ≈4.3 million M☉</td></tr>\n    </table>\n    <p class=\"photos-note\" style=\"margin-top:12px\">On-screen scale is illustrative.</p>\n    <div class=\"photos-title\">NASA PHOTOS</div>\n    <div id=\"nasa-photos\" class=\"photos\"><span class=\"photos-note\">Loading…</span></div>");
   loadPhotos('milky-way', 'Milky Way galaxy');
 }
 function select(id: string, distanceKm?: number, withInfo = true) {
@@ -694,9 +679,9 @@ function setTelescopeView(on: boolean) {
   telescopeView = on;
   document.body.dataset.telescope = on ? '1' : '0';
   scopeHud.classList.toggle('hidden', !on);
-  scopeBandEl.textContent = spherexSky.getBand() === 'color' ? 'RGB-ИК (0.75–5.0 мкм)' : `${spherexSky.getBand()} ИК-канал`;
+  scopeBandEl.textContent = spherexSky.getBand() === 'color' ? localized("RGB-ИК (0.75–5.0 мкм)", "RGB-IR (0.75–5.0 μm)") : `${spherexSky.getBand()}${localized(" ИК-канал", " IR channel")}`;
   const infoScopeBtn = info.querySelector<HTMLButtonElement>('[data-spx-action="scope"]');
-  if (infoScopeBtn) infoScopeBtn.textContent = on ? 'Выйти из телескопа' : 'Вид с телескопа';
+  if (infoScopeBtn) infoScopeBtn.textContent = on ? localized("Выйти из телескопа", "Exit telescope view") : localized("Вид с телескопа", "Telescope view");
   if (!on) {
     controls.enabled = true;
     controls.target.set(0, 0, 0);
@@ -724,11 +709,11 @@ function updateOrigin() {
 
 // ---------- Инфопанель ----------
 const info = document.getElementById('info')!;
-const fmt = (x: number, d = 3) => (Math.abs(x) >= 1e5 || (Math.abs(x) < 1e-2 && x !== 0) ? x.toExponential(d) : x.toLocaleString('ru-RU', { maximumFractionDigits: d }));
+const fmt = (x: number, d = 3) => (Math.abs(x) >= 1e5 || (Math.abs(x) < 1e-2 && x !== 0) ? x.toExponential(d) : x.toLocaleString((document.documentElement.lang === 'ru' ? 'ru-RU' : 'en-US'), { maximumFractionDigits: d }));
 const len = (v: number[]) => Math.hypot(v[0], v[1], v[2]);
 
 // ---------- Миссии ----------
-const fmtDate = (d: string) => new Date(d + 'T12:00:00Z').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const fmtDate = (d: string) => new Date(d + 'T12:00:00Z').toLocaleDateString((document.documentElement.lang === 'ru' ? 'ru-RU' : 'en-US'), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 function missionBlock(e: Entity) {
   const m = missionFor(e.def.id);
   if (!m) return '';
@@ -737,12 +722,10 @@ function missionBlock(e: Entity) {
     if (e.liveTle) return Date.parse(d) >= SPHEREX_LAUNCH_MS;
     return !e.track || !!trackState(e.track, new Date(d + 'T12:00:00Z'));
   };
-  return `<div class="m-title">МИССИЯ</div>
-    <div class="m-goal">${m.goal}</div>
-    <table class="m-facts"><tr><td>Цели</td><td>${m.target}</td></tr><tr><td>Годы</td><td>${m.years}</td></tr>${m.status ? `<tr><td>Статус</td><td>${m.status}</td></tr>` : ''}</table>
+  return `${localized("<div class=\"m-title\">МИССИЯ</div>\n    <div class=\"m-goal\">", "<div class=\"m-title\">MISSION</div>\n    <div class=\"m-goal\">")}${m.goal}${localized("</div>\n    <table class=\"m-facts\"><tr><td>Цели</td><td>", "</div>\n    <table class=\"m-facts\"><tr><td>Objectives</td><td>")}${m.target}${localized("</td></tr><tr><td>Годы</td><td>", "</td></tr><tr><td>Years</td><td>")}${m.years}</td></tr>${m.status ? `${localized("<tr><td>Статус</td><td>", "<tr><td>Status</td><td>")}${m.status}</td></tr>` : ''}</table>
     <ol class="m-events">${m.events.map((ev) => {
       const past = Date.parse(ev.date) <= now, ok = hasData(ev.date);
-      return `<li class="${past ? 'past' : 'future'}${ok ? '' : ' nodata'}"><button class="m-ev" data-craft="${m.id}" data-date="${ev.date}" ${ok ? '' : 'disabled title="Нет данных траектории на эту дату"'}>
+      return `<li class="${past ? 'past' : 'future'}${ok ? '' : ' nodata'}"><button class="m-ev" data-craft="${m.id}" data-date="${ev.date}" ${ok ? '' : localized("disabled title=\"Нет данных траектории на эту дату\"", "disabled title=\"No trajectory data for this date\"")}>
         <span class="m-date">${ev.approx ? '≈ ' : ''}${fmtDate(ev.date)}</span><span class="m-name">${ev.title}</span><span class="m-text">${ev.text}</span></button></li>`;
     }).join('')}</ol>`;
 }
@@ -774,62 +757,37 @@ function showInfo(e: Entity | null) {
   if (!e) return;
   const d = e.def;
   if (e === orbitalEnt && trackedObj && tracker) {
-    info.innerHTML = `<button class="close" onclick="location.hash='#/earth'" aria-label="Закрыть"><svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
-      <h1>${escH(d.name)}</h1><div class="kind">Объект на орбите Земли</div>${tracker.infoHtml(trackedObj)}`;
+    info.innerHTML = `${localized("<button class=\"close\" onclick=\"location.hash='#/earth'\" aria-label=\"Закрыть\"><svg viewBox=\"0 0 16 16\"><path d=\"M3 3l10 10M13 3L3 13\"/></svg></button>\n      <h1>", "<button class=\"close\" onclick=\"location.hash='#/earth'\" aria-label=\"Close\"><svg viewBox=\"0 0 16 16\"><path d=\"M3 3l10 10M13 3L3 13\"/></svg></button>\n      <h1>")}${escH(d.name)}${localized("</h1><div class=\"kind\">Объект на орбите Земли</div>", "</h1><div class=\"kind\">Object in Earth orbit</div>")}${tracker.infoHtml(trackedObj)}`;
     return;
   }
   if (e === orbitalEnt && trackedBody) {
-    const b = trackedBody, f2 = (x: number, k = 4) => x.toLocaleString('ru-RU', { maximumFractionDigits: k });
+    const b = trackedBody, f2 = (x: number, k = 4) => x.toLocaleString((document.documentElement.lang === 'ru' ? 'ru-RU' : 'en-US'), { maximumFractionDigits: k });
     const per = b.e < 1 ? 2 * Math.PI / (0.01720209895 / Math.pow(b.a, 1.5)) / 365.25 : null;
-    info.innerHTML = `<button class="close" onclick="location.hash='#/home'" aria-label="Закрыть"><svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
-      <h1>${escH(d.name)}</h1><div class="kind">${SB_NAMES[b.cls]} · ${escH(b.type)}</div>
+    info.innerHTML = `${localized("<button class=\"close\" onclick=\"location.hash='#/home'\" aria-label=\"Закрыть\"><svg viewBox=\"0 0 16 16\"><path d=\"M3 3l10 10M13 3L3 13\"/></svg></button>\n      <h1>", "<button class=\"close\" onclick=\"location.hash='#/home'\" aria-label=\"Close\"><svg viewBox=\"0 0 16 16\"><path d=\"M3 3l10 10M13 3L3 13\"/></svg></button>\n      <h1>")}${escH(d.name)}</h1><div class="kind">${SB_NAMES[b.cls]} · ${escH(b.type)}</div>
       <table>
-        ${b.e < 1 ? `<tr><td>Большая полуось</td><td>${f2(b.a)} а.е.</td></tr>` : ''}
-        <tr><td>Перигелий q</td><td>${f2(b.q)} а.е.</td></tr>
-        <tr><td>Эксцентриситет</td><td>${f2(b.e, 5)}</td></tr>
-        <tr><td>Наклонение</td><td>${f2(b.i * 180 / Math.PI, 3)}°</td></tr>
-        ${per ? `<tr><td>Период</td><td>${f2(per, 2)} лет</td></tr>` : '<tr><td>Орбита</td><td>разомкнутая (e ≥ 1)</td></tr>'}
-        <tr><td>Прохождение перигелия</td><td>${new Date((b.tp - 2440587.5) * 86400000).toISOString().slice(0, 10)}</td></tr>
-        ${b.H != null ? `<tr><td>Абс. звёздная величина H</td><td>${f2(b.H, 2)}</td></tr>${b.cls !== 'comet' ? `<tr><td>Диаметр (оценка, альбедо 0,15)</td><td>≈ ${f2(2 * d.radiusKm, 2)} км</td></tr>` : ''}` : ''}
-        ${b.discoverer ? `<tr><td>Открыт</td><td>${escH(b.discoverer)}${b.discovery ? ', ' + escH(b.discovery) : ''}</td></tr>` : ''}
-        <tr><td>Расстояние до Солнца</td><td id="i-sun"></td></tr>
-        <tr><td>Расстояние до Земли</td><td id="i-earth"></td></tr>
-        <tr><td>Скорость (гелиоц.)</td><td id="i-vel"></td></tr>
-      </table>
-      <p class="photos-note" style="margin-top:10px">${b.model ? 'Форма — реальная 3D-модель по данным миссий/радара.' : 'Форма условная: детальной модели этого тела нет.'} Положение — по оскулирующим элементам MPC/JPL (Stellarium).</p>
-      <div class="photos-title">ФОТО NASA</div><div id="nasa-photos" class="photos"><span class="photos-note">Загрузка…</span></div>`;
+        ${b.e < 1 ? `${localized("<tr><td>Большая полуось</td><td>", "<tr><td>Semi-major axis</td><td>")}${f2(b.a)}${localized(" а.е.</td></tr>", " AU</td></tr>")}` : ''}${localized("\n        <tr><td>Перигелий q</td><td>", "\n        <tr><td>Perihelion q</td><td>")}${f2(b.q)}${localized(" а.е.</td></tr>\n        <tr><td>Эксцентриситет</td><td>", " AU</td></tr>\n        <tr><td>Eccentricity</td><td>")}${f2(b.e, 5)}${localized("</td></tr>\n        <tr><td>Наклонение</td><td>", "</td></tr>\n        <tr><td>Inclination</td><td>")}${f2(b.i * 180 / Math.PI, 3)}°</td></tr>
+        ${per ? `${localized("<tr><td>Период</td><td>", "<tr><td>Period</td><td>")}${f2(per, 2)}${localized(" лет</td></tr>", " years</td></tr>")}` : localized("<tr><td>Орбита</td><td>разомкнутая (e ≥ 1)</td></tr>", "<tr><td>Orbit</td><td>open (e ≥ 1)</td></tr>")}${localized("\n        <tr><td>Прохождение перигелия</td><td>", "\n        <tr><td>Perihelion passage</td><td>")}${new Date((b.tp - 2440587.5) * 86400000).toISOString().slice(0, 10)}</td></tr>
+        ${b.H != null ? `${localized("<tr><td>Абс. звёздная величина H</td><td>", "<tr><td>Absolute magnitude H</td><td>")}${f2(b.H, 2)}</td></tr>${b.cls !== 'comet' ? `${localized("<tr><td>Диаметр (оценка, альбедо 0,15)</td><td>≈ ", "<tr><td>Diameter (estimate, albedo 0.15)</td><td>≈ ")}${f2(2 * d.radiusKm, 2)}${localized(" км</td></tr>", " km</td></tr>")}` : ''}` : ''}
+        ${b.discoverer ? `${localized("<tr><td>Открыт</td><td>", "<tr><td>Discovered</td><td>")}${escH(b.discoverer)}${b.discovery ? ', ' + escH(b.discovery) : ''}</td></tr>` : ''}${localized("\n        <tr><td>Расстояние до Солнца</td><td id=\"i-sun\"></td></tr>\n        <tr><td>Расстояние до Земли</td><td id=\"i-earth\"></td></tr>\n        <tr><td>Скорость (гелиоц.)</td><td id=\"i-vel\"></td></tr>\n      </table>\n      <p class=\"photos-note\" style=\"margin-top:10px\">", "\n        <tr><td>Distance to Sun</td><td id=\"i-sun\"></td></tr>\n        <tr><td>Distance to Earth</td><td id=\"i-earth\"></td></tr>\n        <tr><td>Speed (heliocentric)</td><td id=\"i-vel\"></td></tr>\n      </table>\n      <p class=\"photos-note\" style=\"margin-top:10px\">")}${b.model ? localized("Форма — реальная 3D-модель по данным миссий/радара.", "Shape: real 3D model from mission/radar data.") : localized("Форма условная: детальной модели этого тела нет.", "Illustrative shape: no detailed model is available for this body.")}${localized(" Положение — по оскулирующим элементам MPC/JPL (Stellarium).</p>\n      <div class=\"photos-title\">ФОТО NASA</div><div id=\"nasa-photos\" class=\"photos\"><span class=\"photos-note\">Загрузка…</span></div>", " Position from MPC/JPL (Stellarium) osculating elements.</p>\n      <div class=\"photos-title\">NASA PHOTOS</div><div id=\"nasa-photos\" class=\"photos\"><span class=\"photos-note\">Loading…</span></div>")}`;
     updateInfo();
     loadPhotos(b.id, b.name.replace(/^\(\d+\)\s*/, '') + (b.cls === 'comet' ? ' comet' : ' asteroid'));
     return;
   }
-  const spxExtra = d.id === 'spherex' ? `
-    <div class="info-spx-actions">
-      <button type="button" class="ui-btn primary" data-spx-action="open-lab">Научная консоль</button>
-      <button type="button" class="ui-btn" data-spx-action="scope">${telescopeView ? 'Выйти из телескопа' : 'Вид с телескопа'}</button>
-    </div>` : d.id === 'planet-x' ? `
-    <div class="info-spx-actions">
-      <button type="button" class="ui-btn primary" data-spx-action="open-px">Поиск Planet X</button>
-    </div>` : '';
+  const spxExtra = d.id === 'spherex' ? `${localized("\n    <div class=\"info-spx-actions\">\n      <button type=\"button\" class=\"ui-btn primary\" data-spx-action=\"open-lab\">Научная консоль</button>\n      <button type=\"button\" class=\"ui-btn\" data-spx-action=\"scope\">", "\n    <div class=\"info-spx-actions\">\n      <button type=\"button\" class=\"ui-btn primary\" data-spx-action=\"open-lab\">Science console</button>\n      <button type=\"button\" class=\"ui-btn\" data-spx-action=\"scope\">")}${telescopeView ? localized("Выйти из телескопа", "Exit telescope view") : localized("Вид с телескопа", "Telescope view")}</button>
+    </div>` : d.id === 'planet-x' ? localized("\n    <div class=\"info-spx-actions\">\n      <button type=\"button\" class=\"ui-btn primary\" data-spx-action=\"open-px\">Поиск Planet X</button>\n    </div>", "\n    <div class=\"info-spx-actions\">\n      <button type=\"button\" class=\"ui-btn primary\" data-spx-action=\"open-px\">Planet X search</button>\n    </div>") : '';
   info.innerHTML = `<button class="close" onclick="location.hash='#/home'">✕</button>
-    <h1>${d.name}</h1><div class="kind">${({ star: 'Звезда', planet: 'Планета', dwarf: 'Карликовая планета', moon: 'Спутник', spacecraft: 'Космический аппарат', satellite: 'Спутник Земли / мусор', smallbody: 'Малое тело' })[d.kind]}</div>
+    <h1>${d.name}</h1><div class="kind">${({ star: localized("Звезда", "Star"), planet: localized("Планета", "Planet"), dwarf: localized("Карликовая планета", "Dwarf planet"), moon: localized("Спутник", "Moon"), spacecraft: localized("Космический аппарат", "Spacecraft"), satellite: localized("Спутник Земли / мусор", "Earth satellite / debris"), smallbody: localized("Малое тело", "Small body") })[d.kind]}</div>
     <p>${d.description}</p>
     ${spxExtra}
     <table>
-      ${d.agency ? `<tr><td>Агентство</td><td>${d.agency}</td></tr>` : ''}
-      ${d.launch ? `<tr><td>Запуск</td><td>${d.launch}</td></tr>` : ''}
-      ${d.massKg ? `<tr><td>Масса</td><td>${d.kind === 'spacecraft' ? '≈ ' + fmt(d.massKg, 5) : fmt(d.massKg)} кг</td></tr>` : ''}
-      ${d.kind !== 'spacecraft' ? `<tr><td>Радиус</td><td>${fmt(d.radiusKm)} км</td></tr>` : ''}
-      ${d.orbitDays ? `<tr><td>Период обращения</td><td>${fmt(d.orbitDays)} сут</td></tr>` : ''}
-      ${d.dayHours ? `<tr><td>Период вращения</td><td>${fmt(d.dayHours)} ч</td></tr>` : ''}
-      ${d.tiltDeg !== undefined ? `<tr><td>Наклон оси</td><td>${d.tiltDeg}°</td></tr>` : ''}
-      ${d.id === 'spherex' ? `<tr><td>Высота / Наклонение</td><td id="i-spx-alt">—</td></tr><tr><td>Спектры / Проход</td><td id="i-spx-spec">—</td></tr>` : ''}
-      <tr><td>Расстояние до Солнца</td><td id="i-sun"></td></tr>
-      <tr><td>Расстояние до Земли</td><td id="i-earth"></td></tr>
-      <tr><td>Скорость (гелиоц.)</td><td id="i-vel"></td></tr>
-    </table>
-    ${missionBlock(e)}
-    <div class="photos-title">ФОТО NASA</div>
-    <div id="nasa-photos" class="photos"><span class="photos-note">Загрузка…</span></div>`;
+      ${d.agency ? `${localized("<tr><td>Агентство</td><td>", "<tr><td>Agency</td><td>")}${d.agency}</td></tr>` : ''}
+      ${d.launch ? `${localized("<tr><td>Запуск</td><td>", "<tr><td>Launch</td><td>")}${d.launch}</td></tr>` : ''}
+      ${d.massKg ? `${localized("<tr><td>Масса</td><td>", "<tr><td>Mass</td><td>")}${d.kind === 'spacecraft' ? '≈ ' + fmt(d.massKg, 5) : fmt(d.massKg)}${localized(" кг</td></tr>", " kg</td></tr>")}` : ''}
+      ${d.kind !== 'spacecraft' ? `${localized("<tr><td>Радиус</td><td>", "<tr><td>Radius</td><td>")}${fmt(d.radiusKm)}${localized(" км</td></tr>", " km</td></tr>")}` : ''}
+      ${d.orbitDays ? `${localized("<tr><td>Период обращения</td><td>", "<tr><td>Orbital period</td><td>")}${fmt(d.orbitDays)}${localized(" сут</td></tr>", " days</td></tr>")}` : ''}
+      ${d.dayHours ? `${localized("<tr><td>Период вращения</td><td>", "<tr><td>Rotation period</td><td>")}${fmt(d.dayHours)}${localized(" ч</td></tr>", " h</td></tr>")}` : ''}
+      ${d.tiltDeg !== undefined ? `${localized("<tr><td>Наклон оси</td><td>", "<tr><td>Axial tilt</td><td>")}${d.tiltDeg}°</td></tr>` : ''}
+      ${d.id === 'spherex' ? localized("<tr><td>Высота / Наклонение</td><td id=\"i-spx-alt\">—</td></tr><tr><td>Спектры / Проход</td><td id=\"i-spx-spec\">—</td></tr>", "<tr><td>Altitude / Inclination</td><td id=\"i-spx-alt\">—</td></tr><tr><td>Spectra / Pass</td><td id=\"i-spx-spec\">—</td></tr>") : ''}${localized("\n      <tr><td>Расстояние до Солнца</td><td id=\"i-sun\"></td></tr>\n      <tr><td>Расстояние до Земли</td><td id=\"i-earth\"></td></tr>\n      <tr><td>Скорость (гелиоц.)</td><td id=\"i-vel\"></td></tr>\n    </table>\n    ", "\n      <tr><td>Distance to Sun</td><td id=\"i-sun\"></td></tr>\n      <tr><td>Distance to Earth</td><td id=\"i-earth\"></td></tr>\n      <tr><td>Speed (heliocentric)</td><td id=\"i-vel\"></td></tr>\n    </table>\n    ")}${missionBlock(e)}${localized("\n    <div class=\"photos-title\">ФОТО NASA</div>\n    <div id=\"nasa-photos\" class=\"photos\"><span class=\"photos-note\">Загрузка…</span></div>", "\n    <div class=\"photos-title\">NASA PHOTOS</div>\n    <div id=\"nasa-photos\" class=\"photos\"><span class=\"photos-note\">Loading…</span></div>")}`;
   updateInfo();
   const query = e.def.id === 'planet-x' ? 'Planet Nine outer solar system' : e.def.kind === 'planet' ? `${e.def.name} planet` : e.def.kind === 'spacecraft' ? `${e.def.name} spacecraft` : e.def.name;
   loadPhotos(e.def.id, query);
@@ -854,14 +812,14 @@ async function loadPhotos(id: string, q: string) {
       });
       photoCache.set(id, photos);
     } catch {
-      const b = box(); if (b) b.innerHTML = '<span class="photos-note">Фото сейчас недоступны</span>';
+      const b = box(); if (b) b.innerHTML = localized("<span class=\"photos-note\">Фото сейчас недоступны</span>", "<span class=\"photos-note\">Photos are currently unavailable</span>");
       return;
     }
   }
   const b = box(); if (!b) return;
   b.innerHTML = photos.length
     ? photos.map((p) => `<a href="https://images.nasa.gov/details/${encodeURIComponent(p.id)}" target="_blank" rel="noopener" title="${p.title.replace(/"/g, '&quot;')}"><img loading="lazy" src="${p.thumb}" alt=""></a>`).join('')
-    : '<span class="photos-note">Фото не найдены</span>';
+    : localized("<span class=\"photos-note\">Фото не найдены</span>", "<span class=\"photos-note\">No photos found</span>");
 }
 
 function updateInfo() {
@@ -870,13 +828,13 @@ function updateInfo() {
   const s = focus.state, earth = entities.get('earth')!.state;
   const ds = len(s.pos), de = len([s.pos[0] - earth.pos[0], s.pos[1] - earth.pos[1], s.pos[2] - earth.pos[2]]);
   const set = (id: string, t: string) => { const el = document.getElementById(id); if (el) el.textContent = t; };
-  set('i-sun', `${fmt(ds / KM_PER_AU, 4)} а.е. (${fmt(ds, 4)} км)`);
-  set('i-earth', focus.def.id === 'earth' ? '—' : `${fmt(de / KM_PER_AU, 4)} а.е. (${fmt(de, 4)} км)`);
-  set('i-vel', `${fmt(len(s.vel), 3)} км/с`);
+  set('i-sun', `${fmt(ds / KM_PER_AU, 4)}${localized(" а.е. (", " AU (")}${fmt(ds, 4)}${localized(" км)", " km)")}`);
+  set('i-earth', focus.def.id === 'earth' ? '—' : `${fmt(de / KM_PER_AU, 4)}${localized(" а.е. (", " AU (")}${fmt(de, 4)}${localized(" км)", " km)")}`);
+  set('i-vel', `${fmt(len(s.vel), 3)}${localized(" км/с", " km/s")}`);
   if (focus.def.id === 'spherex') {
     const st = surveyStats(clock.date);
-    set('i-spx-alt', latestSpherexTel ? `${latestSpherexTel.altitudeKm.toFixed(1)} км · ${latestSpherexTel.inclinationDeg.toFixed(2)}°` : '—');
-    set('i-spx-spec', `${st.totalSpectraBillions.toFixed(2)} млрд · Проход ${st.currentPass}`);
+    set('i-spx-alt', latestSpherexTel ? `${latestSpherexTel.altitudeKm.toFixed(1)}${localized(" км · ", " km · ")}${latestSpherexTel.inclinationDeg.toFixed(2)}°` : '—');
+    set('i-spx-spec', `${st.totalSpectraBillions.toFixed(2)}${localized(" млрд · Проход ", " billion · Pass ")}${st.currentPass}`);
   }
 }
 setInterval(updateInfo, 250);
@@ -1071,7 +1029,7 @@ document.getElementById('lang-en-btn')!.onclick = () => setLang('en');
 document.getElementById('lang-ru-btn')!.onclick = () => setLang('ru');
 onLangChange(() => {
   // Re-render dynamic parts that bypass data-i18n
-  if (earthLayer) earthLayer.setCatalog(catalog ?? undefined);
+  if (earthLayer && catalog) earthLayer.setCatalog(catalog);
 });
 
 document.getElementById('menu-btn')!.onclick = () => document.getElementById('menu')!.classList.toggle('hidden');
@@ -1099,16 +1057,16 @@ flood.onchange = () => setFlood(flood.checked);
 setFlood(params.get('lighting') === 'flood');
 
 // Командная палитра (/ или Ctrl+K): объекты сцены + внешние каталоги (window.__searchProviders) + дата
-const KIND_RU: Record<string, string> = { star: 'Звезда', planet: 'Планета', dwarf: 'Карликовая планета', moon: 'Спутник планеты', spacecraft: 'Космический аппарат', satellite: 'Спутник Земли' };
+const KIND_RU: Record<string, string> = { star: localized("Звезда", "Star"), planet: localized("Планета", "Planet"), dwarf: localized("Карликовая планета", "Dwarf planet"), moon: localized("Спутник планеты", "Planetary moon"), spacecraft: localized("Космический аппарат", "Spacecraft"), satellite: localized("Спутник Земли", "Earth satellite") };
 initCommandPalette((q) => {
   const t = q.trim();
   const items: PaletteItem[] = [];
   const dm = t.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (dm && !Number.isNaN(Date.parse(t + 'T12:00:00Z'))) {
-    items.push({ label: `Перейти к дате ${t}`, sub: 'машина времени · 12:00 UTC', kind: 'date', pin: true, go: () => { clock.setTime(Date.parse(t + 'T12:00:00Z')); clock.setRate(1); } });
+    items.push({ label: `${localized("Перейти к дате ", "Jump to date ")}${t}`, sub: localized("машина времени · 12:00 UTC", "time machine · 12:00 UTC"), kind: 'date', pin: true, go: () => { clock.setTime(Date.parse(t + 'T12:00:00Z')); clock.setRate(1); } });
   }
-  items.push({ label: 'Млечный Путь', sub: 'Milky Way · галактика', kind: 'galaxy', go: () => { location.hash = '#/milky-way'; } });
-  items.push({ label: 'Вся Солнечная система', sub: 'home · обзор', kind: 'galaxy', go: () => { location.hash = '#/home'; } });
+  items.push({ label: localized("Млечный Путь", "Milky Way"), sub: localized("Milky Way · галактика", "Milky Way · galaxy"), kind: 'galaxy', go: () => { location.hash = '#/milky-way'; } });
+  items.push({ label: localized("Вся Солнечная система", "Entire Solar System"), sub: localized("home · обзор", "home · overview"), kind: 'galaxy', go: () => { location.hash = '#/home'; } });
   for (const e of entities.values()) {
     const parent = e.def.parent ? entities.get(e.def.parent)?.def.name : '';
     items.push({ label: e.def.name, sub: `${KIND_RU[e.def.kind] ?? e.def.kind}${parent ? ' · ' + parent : ''} · ${e.def.id}`, kind: e.def.kind, go: () => { location.hash = `#/${e.def.id}`; } });
@@ -1148,9 +1106,9 @@ function playStory(story: Story, index: number) {
     <h2>${step.title}</h2>
     <p>${step.text}</p>
     <div class="story-nav">
-      ${i > 0 ? `<a href="${link(i - 1)}">← Назад</a>` : '<span></span>'}
+      ${i > 0 ? `<a href="${link(i - 1)}${localized("\">← Назад</a>", "\">← Back</a>")}` : '<span></span>'}
       <span class="story-count">${i + 1} / ${story.steps.length}</span>
-      ${i < story.steps.length - 1 ? `<a href="${link(i + 1)}">Далее →</a>` : `<a href="#/home">Готово</a>`}
+      ${i < story.steps.length - 1 ? `<a href="${link(i + 1)}${localized("\">Далее →</a>", "\">Next →</a>")}` : localized("<a href=\"#/home\">Готово</a>", "<a href=\"#/home\">Done</a>")}
     </div>`;
 }
 
@@ -1182,7 +1140,7 @@ function route() {
 addEventListener('hashchange', route);
 
 // ---------- AI-ассистент ----------
-initAssistant(() => ({ focusId: viewingGalaxy() ? 'milky-way' : focus?.def.id ?? null, focusName: viewingGalaxy() ? 'Milky Way (Млечный Путь)' : focus?.def.name ?? null, date: clock.date.toISOString().slice(0, 10) }));
+initAssistant(() => ({ focusId: viewingGalaxy() ? 'milky-way' : focus?.def.id ?? null, focusName: viewingGalaxy() ? localized("Milky Way (Млечный Путь)", "Milky Way") : focus?.def.name ?? null, date: clock.date.toISOString().slice(0, 10) }));
 
 // ---------- Старт ----------
 (async () => {
@@ -1251,7 +1209,7 @@ initAssistant(() => ({ focusId: viewingGalaxy() ? 'milky-way' : focus?.def.id ??
     getSurveyBand: () => spherexSky.getBand(),
     setSurveyBand: (band) => {
       spherexSky.setBand(band);
-      scopeBandEl.textContent = band === 'color' ? 'RGB-ИК (0.75–5.0 мкм)' : `${band} ИК-канал`;
+      scopeBandEl.textContent = band === 'color' ? localized("RGB-ИК (0.75–5.0 мкм)", "RGB-IR (0.75–5.0 μm)") : `${band}${localized(" ИК-канал", " IR channel")}`;
     },
     isScanConeEnabled: () => showScanCone,
     setScanConeEnabled: (on) => setScanCone(on),
@@ -1262,7 +1220,7 @@ initAssistant(() => ({ focusId: viewingGalaxy() ? 'milky-way' : focus?.def.id ??
       else select(id);
     },
   });
-  document.getElementById('search-list')!.innerHTML = ['Milky Way', 'Млечный Путь', ...[...entities.values()].map((e) => e.def.name)].map((n) => `<option value="${n}">`).join('');
+  document.getElementById('search-list')!.innerHTML = ['Milky Way', localized("Млечный Путь", "Milky Way"), ...[...entities.values()].map((e) => e.def.name)].map((n) => `<option value="${n}">`).join('');
   fill.style.width = '100%';
   route();
   afterDraw(frame);

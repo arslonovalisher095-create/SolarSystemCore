@@ -1,3 +1,4 @@
+import { localized } from '../i18n';
 // 3D-модели для объектов на орбите Земли и малых тел.
 // Настоящие модели: NASA 3D Resources (public domain) и Space Radar (MIT, построены по опубликованным размерам) —
 // см. public/models/CREDITS.md. Если для объекта нет своей модели, строится условная: обломок — рваный
@@ -15,9 +16,9 @@ const BY_NORAD: Record<number, string> = {
 const BY_NAME: [RegExp, string, string][] = [
   [/^ISS\b/, 'iss.glb', 'NASA 3D Resources'],
   [/^CSS \(|TIANHE|WENTIAN|MENGTIAN/, 'tiangong.glb', 'Space Radar'],
-  [/^STARLINK/, 'starlink-v1.glb', 'Starlink v1 (условно для всех поколений)'],
+  [/^STARLINK/, 'starlink-v1.glb', localized("Starlink v1 (условно для всех поколений)", "Starlink v1 (representative of all generations)")],
   [/^ONEWEB/, 'oneweb.glb', 'Space Radar'],
-  [/^(GPS|NAVSTAR)/, 'gps-iii.glb', 'GPS III (условно для всех блоков)'],
+  [/^(GPS|NAVSTAR)/, 'gps-iii.glb', localized("GPS III (условно для всех блоков)", "GPS III (representative of all blocks)")],
   [/^GOES/, 'goes.glb', 'NASA 3D Resources'],
   [/^TDRS/, 'tdrs.glb', 'NASA 3D Resources'],
   [/^TERRA$/, 'terra.glb', 'NASA 3D Resources'],
@@ -33,16 +34,16 @@ const BY_NAME: [RegExp, string, string][] = [
   [/ATLAS 5 CENTAUR R\/B/, 'atlas5-centaur.glb', 'Space Radar'],
   [/CENTAUR R\/B/, 'centaur-d.glb', 'Space Radar'],
   [/H-2A R\/B|H-IIA R\/B/, 'h2a-stage2.glb', 'Space Radar'],
-  [/SL-8 R\/B/, 'kosmos3m-stage2.glb', 'Space Radar (Космос-3М)'],
+  [/SL-8 R\/B/, 'kosmos3m-stage2.glb', localized("Space Radar (Космос-3М)", "Space Radar (Kosmos-3M)")],
 ];
 
 export function modelFor(o: OrbitalObject): ModelPick {
-  if (BY_NORAD[o.norad]) return { file: BY_NORAD[o.norad], generic: false, note: 'модель аппарата' };
+  if (BY_NORAD[o.norad]) return { file: BY_NORAD[o.norad], generic: false, note: localized("модель аппарата", "spacecraft model") };
   const hit = BY_NAME.find(([re]) => re.test(o.name));
   if (hit) return { file: hit[1], generic: false, typical: /условно/.test(hit[2]), note: hit[2] };
-  if (o.cls === CLS_DEBRIS) return { file: null, generic: true, note: 'условный фрагмент: форма конкретного обломка неизвестна' };
-  if (o.cls === CLS_ROCKET) return { file: null, generic: true, note: 'условная ступень: модели этого типа нет' };
-  return { file: null, generic: true, note: 'условная платформа: модели этого аппарата нет' };
+  if (o.cls === CLS_DEBRIS) return { file: null, generic: true, note: localized("условный фрагмент: форма конкретного обломка неизвестна", "illustrative fragment: the shape of this debris is unknown") };
+  if (o.cls === CLS_ROCKET) return { file: null, generic: true, note: localized("условная ступень: модели этого типа нет", "illustrative rocket body: no model for this type") };
+  return { file: null, generic: true, note: localized("условная платформа: модели этого аппарата нет", "illustrative bus: no model for this spacecraft") };
 }
 
 const cache = new Map<string, Promise<THREE.Object3D>>();

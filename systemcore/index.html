@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PlanetX × SPHEREx — Solar Explorer</title>
-  <meta name="description" content="Интерактивная 3D-обсерватория Солнечной системы в реальном времени: живая SGP4-орбита SPHEREx, 102 ИК-канала (0.75–5.00 мкм), >14 млрд спектров и поиск Planet X." />
+  <meta name="description" content="An interactive real-time 3D Solar System observatory: live SPHEREx SGP4 orbit, 102 infrared channels (0.75–5.00 μm), >14 billion spectra and the search for Planet X." />
   <meta name="theme-color" content="#050608" />
 </head>
 <body>
@@ -16,7 +16,7 @@
   <div id="labels"></div>
   <header id="header">
     <div class="hdr-left">
-      <a href="#/home" class="brand" aria-label="Solar Explorer — на главную">
+      <a href="#/home" class="brand" aria-label="Solar Explorer — home">
         <svg class="brand-mark" viewBox="0 0 28 28" aria-hidden="true">
           <circle cx="14" cy="14" r="3.2" />
           <ellipse cx="14" cy="14" rx="12" ry="5.2" transform="rotate(-24 14 14)" />
@@ -24,7 +24,7 @@
         </svg>
         <span class="brand-word">SOLAR EXPLORER</span>
       </a>
-      <nav class="hdr-nav" aria-label="Разделы">
+      <nav class="hdr-nav" aria-label="Sections">
         <button id="skyview-btn" data-i18n="nav.spherex-sky" aria-label="SPHEREx sky: images and epoch comparison">SPHEREx SKY</button>
         <button id="spherex-lab-btn" data-i18n="nav.console" aria-label="SPHEREx science console">CONSOLE</button>
         <button id="toolbox-btn" data-i18n="nav.toolbox" aria-label="ToolBox">TOOLBOX</button>
@@ -44,10 +44,10 @@
     </div>
   </header>
   <aside id="toolbox" class="hidden"></aside>
-  <section id="spherex-lab" class="hidden" role="dialog" aria-label="SPHEREx и Planet X Лаборатория"></section>
+  <section id="spherex-lab" class="hidden" role="dialog" aria-label="SPHEREx and Planet X laboratory"></section>
   <div id="scope-hud" class="hidden" aria-hidden="true">
     <div class="scope-frame">
-      <span class="scope-top">SPHEREx FOV · 11.3° × 3.5° · <b id="scope-band">RGB-ИК</b></span>
+      <span class="scope-top">SPHEREx FOV · 11.3° × 3.5° · <b id="scope-band">RGB-IR</b></span>
       <span class="scope-cross"></span>
       <button type="button" id="scope-exit" data-i18n="scope.exit">Exit telescope view</button>
     </div>
@@ -68,7 +68,7 @@
     <div class="mn-sec" data-i18n="menu.lang">LANGUAGE</div>
     <div class="mn-lang">
       <button type="button" class="mn-lang-btn active" data-lang-btn="en" id="lang-en-btn">EN English</button>
-      <button type="button" class="mn-lang-btn" data-lang-btn="ru" id="lang-ru-btn">RU Русский</button>
+      <button type="button" class="mn-lang-btn" data-lang-btn="ru" id="lang-ru-btn">RU Russian</button>
     </div>
     <div class="mn-sec" data-i18n="menu.keys">KEYBOARD</div>
     <div class="mn-keys">
@@ -76,7 +76,7 @@
     </div>
     <datalist id="search-list"></datalist>
   </nav>
-  <div id="cmdk" class="hidden" role="dialog" aria-label="Поиск">
+  <div id="cmdk" class="hidden" role="dialog" aria-label="Search">
     <div class="ck-box">
       <div class="ck-input">
         <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4 14 14" /></svg>
@@ -84,11 +84,11 @@
         <kbd>Esc</kbd>
       </div>
       <ul id="cmdk-list" role="listbox"></ul>
-      <div class="ck-foot"><span><kbd>↑</kbd><kbd>↓</kbd> выбор</span><span><kbd>Enter</kbd> перейти</span><span id="cmdk-count"></span></div>
+      <div class="ck-foot"><span><kbd>↑</kbd><kbd>↓</kbd> select</span><span><kbd>Enter</kbd> go</span><span id="cmdk-count"></span></div>
     </div>
   </div>
   <aside id="info" class="hidden"></aside>
-  <section id="events" class="hidden"><button id="events-toggle" aria-expanded="true"><span>ИСТОРИИ</span><b id="events-count"></b><i></i></button><div id="event-cards"></div></section>
+  <section id="events" class="hidden"><button id="events-toggle" aria-expanded="true"><span>STORIES</span><b id="events-count"></b><i></i></button><div id="event-cards"></div></section>
   <section id="story" class="hidden"></section>
   <footer id="timeline">
     <div class="tl-time">
@@ -96,7 +96,7 @@
       <div id="clocktime"></div>
     </div>
     <div class="tl-controls">
-      <div class="tl-group" aria-label="Назад">
+      <div class="tl-group" aria-label="Back">
         <button data-rate="-31557600" data-i18n="tl.btn-year-back" data-i18n-attr="title" title="Back: 1 year per second"><i><svg viewBox="0 0 16 16"><path d="M3 3v10M13 4 8 8l5 4M8.5 4 3.5 8l5 4" /></svg></i><span data-i18n="tl.year">year</span></button>
         <button data-rate="-86400" data-i18n="tl.btn-day-back" data-i18n-attr="title" title="Back: 1 day per second"><i><svg viewBox="0 0 16 16"><path d="M10 4 6 8l4 4" /></svg></i><span data-i18n="tl.day">day</span></button>
       </div>

@@ -1,3 +1,4 @@
+import { localized } from './i18n';
 // Процедурный «слепой обзор» неба + оценка расстояния по двум независимым методам.
 // Заменяет прежний захардкоженный 4-кадровый Planet X Blink (одни и те же dx/dy каждый раз)
 // на настоящий поиск: при каждом запуске генерируется новый случайный сектор неба. Иногда там
@@ -56,7 +57,7 @@ function mulberry32(seed: number) {
   };
 }
 
-const EPOCH_LABELS = ['Проход 1', 'Проход 2', 'Проход 3', 'Проход 4'];
+const EPOCH_LABELS = [localized("Проход 1", "Pass 1"), localized("Проход 2", "Pass 2"), localized("Проход 3", "Pass 3"), localized("Проход 4", "Pass 4")];
 
 export function generateSector(seed: number = (Date.now() ^ (Math.random() * 1e9)) & 0xffffffff): SurveySector {
   const rnd = mulberry32(seed);
@@ -138,7 +139,7 @@ function distanceFromParallaxJump(sector: SurveySector): number | null {
 
 export function estimateDistance(sector: SurveySector): DistanceEstimate {
   if (sector.kind === 'none') {
-    return { fromShortArcAu: null, fromParallaxJumpAu: null, agreePct: null, verdict: 'inconclusive', confidenceLabel: 'Значимого движения в этом секторе не обнаружено — только неподвижный фон.' };
+    return { fromShortArcAu: null, fromParallaxJumpAu: null, agreePct: null, verdict: 'inconclusive', confidenceLabel: localized("Значимого движения в этом секторе не обнаружено — только неподвижный фон.", "No significant motion detected in this sector — only a fixed background.") };
   }
   const a = distanceFromShortArc(sector);
   const b = distanceFromParallaxJump(sector);
@@ -155,10 +156,10 @@ export function estimateDistance(sector: SurveySector): DistanceEstimate {
   }
   const confidenceLabel =
     agreePct != null && agreePct > 70
-      ? `Две независимые оценки согласуются (${agreePct.toFixed(0)}%) — надёжный кандидат.`
+      ? `${localized("Две независимые оценки согласуются (", "Two independent estimates agree (")}${agreePct.toFixed(0)}${localized("%) — надёжный кандидат.", "%) — reliable candidate.")}`
       : agreePct != null
-      ? `Оценки расходятся (совпадение ${agreePct.toFixed(0)}%) — нужно больше проходов для подтверждения.`
-      : 'Недостаточно эпох для перекрёстной проверки.';
+      ? `${localized("Оценки расходятся (совпадение ", "Estimates differ (agreement ")}${agreePct.toFixed(0)}${localized("%) — нужно больше проходов для подтверждения.", "%) — more passes are needed for confirmation.")}`
+      : localized("Недостаточно эпох для перекрёстной проверки.", "Insufficient epochs for cross-checking.");
   return { fromShortArcAu: a, fromParallaxJumpAu: b, agreePct, verdict, confidenceLabel };
 }
 

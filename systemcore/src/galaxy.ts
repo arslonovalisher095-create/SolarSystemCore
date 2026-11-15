@@ -1,3 +1,4 @@
+import { localized } from './i18n';
 import * as THREE from 'three';
 
 /**
@@ -104,10 +105,7 @@ export function createGalaxy(scene: THREE.Scene, onSelect: () => void = () => {}
   // Подписи
   const wrap = document.createElement('div');
   wrap.id = 'galaxy-ui';
-  wrap.innerHTML = `
-    <div class="g-label g-core" title="Перейти к Млечному Пути"><span class="marker"></span><span class="name">MILKY WAY</span></div>
-    <div class="g-label g-sun"><span class="marker"></span><span class="name">ВЫ ЗДЕСЬ · СОЛНЦЕ</span></div>
-    <div class="g-caption"><b>Млечный Путь</b><span>Диаметр ≈ 100 000 световых лет · 100–400 млрд звёзд · Солнце в рукаве Ориона, ≈ 26 000 св. лет от центра</span><em>Масштаб условный</em></div>`;
+  wrap.innerHTML = localized("\n    <div class=\"g-label g-core\" title=\"Перейти к Млечному Пути\"><span class=\"marker\"></span><span class=\"name\">MILKY WAY</span></div>\n    <div class=\"g-label g-sun\"><span class=\"marker\"></span><span class=\"name\">ВЫ ЗДЕСЬ · СОЛНЦЕ</span></div>\n    <div class=\"g-caption\"><b>Млечный Путь</b><span>Диаметр ≈ 100 000 световых лет · 100–400 млрд звёзд · Солнце в рукаве Ориона, ≈ 26 000 св. лет от центра</span><em>Масштаб условный</em></div>", "\n    <div class=\"g-label g-core\" title=\"Go to the Milky Way\"><span class=\"marker\"></span><span class=\"name\">MILKY WAY</span></div>\n    <div class=\"g-label g-sun\"><span class=\"marker\"></span><span class=\"name\">YOU ARE HERE · SUN</span></div>\n    <div class=\"g-caption\"><b>Milky Way</b><span>Diameter ≈100,000 light-years · 100–400 billion stars · Sun in the Orion Arm, ≈26,000 light-years from the center</span><em>Illustrative scale</em></div>");
   document.body.appendChild(wrap);
   const coreEl = wrap.querySelector<HTMLElement>('.g-core')!, sunEl = wrap.querySelector<HTMLElement>('.g-sun')!;
   coreEl.onclick = onSelect;

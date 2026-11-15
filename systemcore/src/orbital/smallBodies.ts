@@ -1,3 +1,4 @@
+import { localized } from '../i18n';
 // Малые тела: астероиды, кометы, транснептуновые объекты с реальными оскулирующими элементами
 // (Stellarium ssystem_minor.ini ← MPC/JPL) + 35 792 орбиты околоземных астероидов (форма орбит,
 // без фазы — в наборе нет средней аномалии, поэтому рисуем только сами орбиты).
@@ -12,7 +13,7 @@ export const SB_COLORS: Record<SbClass, string> = {
   neo: '#ffb36b', mba: '#9aa5b3', trojan: '#7ee0a6', centaur: '#e0c36b', tno: '#7fa8ff', comet: '#8fd8ff', interstellar: '#ff4a4a', dwarf: '#ffffff',
 };
 export const SB_NAMES: Record<SbClass, string> = {
-  neo: 'Сближающиеся с Землёй', mba: 'Главный пояс', trojan: 'Троянцы Юпитера', centaur: 'Кентавры', tno: 'Транснептуновые', comet: 'Кометы', interstellar: 'Межзвёздные', dwarf: 'Карликовые планеты',
+  neo: localized("Сближающиеся с Землёй", "Near-Earth"), mba: localized("Главный пояс", "Main belt"), trojan: localized("Троянцы Юпитера", "Jupiter Trojans"), centaur: localized("Кентавры", "Centaurs"), tno: localized("Транснептуновые", "Trans-Neptunian"), comet: localized("Кометы", "Comets"), interstellar: localized("Межзвёздные", "Interstellar"), dwarf: localized("Карликовые планеты", "Dwarf planets"),
 };
 
 export interface SmallBody {
