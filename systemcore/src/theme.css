@@ -1,0 +1,107 @@
+/* ==========================================================================
+   Solar Explorer — дизайн-система «Flight Dynamics Console»
+   Один акцент (international orange — цвет термоизоляции аппаратов),
+   волосяные линии вместо теней, прямые углы, моноширинные цифры.
+   Никаких градиентных кнопок, «стекла», эмодзи и пилюль.
+   ========================================================================== */
+html { font-size: 14px; }
+:root {
+  --bg: #04060a;
+  --panel: rgba(16, 21, 29, 0.95);
+  --panel-solid: #121821;
+  --panel-raise: #1a2230;
+  --panel-hover: #222c3c;
+  --line: #222b37;
+  --line-2: #2e3947;
+  --line-3: #455264;
+  --text: #f2f5f9;
+  --text-2: #d0d7e0;
+  --dim: #a5afbd;
+  --faint: #7a8595;
+
+  --accent: #ff6b2c;          /* единственный акцент интерфейса */
+  --accent-2: #ff8a55;
+  --accent-dim: rgba(255, 107, 44, 0.18);
+  --accent-line: rgba(255, 107, 44, 0.55);
+  --accent-ink: #1a0902;
+
+  /* Семантика данных (только для данных, не для декора) */
+  --c-sat: #58c4ff;
+  --c-debris: #d3d8df;
+  --c-rocket: #ffcc4d;
+  --c-gnss: #7ee0a6;
+  --c-geo: #c9a6ff;
+  --c-crew: #ffffff;
+  --c-danger: #ff4a4a;
+  --c-ok: #5fe08f;
+  --c-neo: #ffb36b;
+  --c-mba: #8f9aa8;
+  --c-comet: #8fd8ff;
+
+  --f-sans: "DIN Alternate", "Bahnschrift", "D-DIN", "Barlow", "Roboto Condensed", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  --r: 10px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+  --gap: 12px;
+  --micro: 11px;
+  --header-h: 64px;
+  --timeline-h: 82px;
+}
+
+/* Микро-подпись */
+.ui-micro { font: 600 var(--micro)/1.25 var(--f-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+.ui-num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: 0; }
+
+/* Панель: скруглённая карточка с мягкой тенью */
+.ui-panel { position: relative; background: var(--panel); border: 1px solid var(--line-2); border-radius: var(--r-lg); box-shadow: var(--shadow); }
+.ui-panel::before, .ui-panel::after { content: none; }
+
+/* Кнопки: вторичная — заполненная тёмная, основная — акцентная */
+.ui-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 34px; padding: 0 16px; border-radius: var(--r);
+  background: var(--panel-raise); color: var(--text); border: 1px solid var(--line-2);
+  font: 600 12.5px/1 var(--f-sans); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; text-decoration: none;
+  transition: background .15s, border-color .15s, color .15s, transform .1s;
+}
+.ui-btn:hover { background: var(--panel-hover); border-color: var(--line-3); }
+.ui-btn:active { transform: translateY(1px); }
+.ui-btn.is-on, .ui-btn[aria-pressed="true"] { background: var(--accent-dim); border-color: var(--accent-line); color: var(--text); }
+.ui-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.ui-btn.primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.ui-btn:disabled { opacity: .45; cursor: default; }
+.ui-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+.ui-input {
+  height: 38px; padding: 0 14px; border-radius: var(--r); border: 1px solid var(--line-2);
+  background: #0b1018; color: var(--text); font: 14px var(--f-sans); outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.ui-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+
+/* Вкладки: сегментированный переключатель с заливкой активной */
+.ui-tabs { display: flex; gap: 4px; padding: 4px; margin: 10px 12px; background: #0b1018; border: 1px solid var(--line); border-radius: var(--r-pill); overflow-x: auto; scrollbar-width: none; }
+.ui-tabs::-webkit-scrollbar { display: none; }
+.ui-tabs > button {
+  flex: 1 0 auto; background: none; border: 0; color: var(--dim); padding: 9px 14px; cursor: pointer; border-radius: var(--r-pill);
+  font: 700 12px/1 var(--f-sans); letter-spacing: .06em; text-transform: uppercase; position: relative; white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.ui-tabs > button:hover { color: var(--text); background: var(--panel-raise); }
+.ui-tabs > button.on, .ui-tabs > button[aria-selected="true"] { color: var(--accent-ink); background: var(--accent); }
+.ui-tabs > button.on::after, .ui-tabs > button[aria-selected="true"]::after { content: none; }
+
+/* Таблицы данных */
+.ui-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ui-table th { text-align: left; font: 700 10.5px/1 var(--f-sans); letter-spacing: .1em; text-transform: uppercase; color: var(--faint); padding: 8px 10px; border-bottom: 1px solid var(--line-2); }
+.ui-table td { padding: 7px 10px; border-bottom: 1px solid var(--line); color: var(--text-2); }
+.ui-table tr:last-child td { border-bottom: 0; }
+.ui-table td.n { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; color: var(--text); }
+
+/* Скроллбары */
+* { scrollbar-width: thin; scrollbar-color: var(--line-3) transparent; }
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-thumb { background: var(--line-3); border-radius: 99px; }
+*::-webkit-scrollbar-track { background: transparent; }

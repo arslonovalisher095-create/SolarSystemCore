@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": false,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false,
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "outDir": "dist-dev"
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
+}

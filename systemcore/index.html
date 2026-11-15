@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlanetX × SPHEREx — Solar Explorer</title>
+  <meta name="description" content="Интерактивная 3D-обсерватория Солнечной системы в реальном времени: живая SGP4-орбита SPHEREx, 102 ИК-канала (0.75–5.00 мкм), >14 млрд спектров и поиск Planet X." />
+  <meta name="theme-color" content="#050608" />
+</head>
+<body>
+  <div id="loader">
+    <div class="ld-head"><span class="ld-title">SOLAR EXPLORER</span><span class="ld-sub" data-i18n="loader.sub">LOADING EPHEMERIDES &amp; TEXTURES</span></div>
+    <div class="bar"><div class="fill"></div></div>
+  </div>
+  <canvas id="scene"></canvas>
+  <div id="labels"></div>
+  <header id="header">
+    <div class="hdr-left">
+      <a href="#/home" class="brand" aria-label="Solar Explorer — на главную">
+        <svg class="brand-mark" viewBox="0 0 28 28" aria-hidden="true">
+          <circle cx="14" cy="14" r="3.2" />
+          <ellipse cx="14" cy="14" rx="12" ry="5.2" transform="rotate(-24 14 14)" />
+          <circle class="brand-dot" cx="24.4" cy="9.6" r="1.6" />
+        </svg>
+        <span class="brand-word">SOLAR EXPLORER</span>
+      </a>
+      <nav class="hdr-nav" aria-label="Разделы">
+        <button id="skyview-btn" data-i18n="nav.spherex-sky" aria-label="SPHEREx sky: images and epoch comparison">SPHEREx SKY</button>
+        <button id="spherex-lab-btn" data-i18n="nav.console" aria-label="SPHEREx science console">CONSOLE</button>
+        <button id="toolbox-btn" data-i18n="nav.toolbox" aria-label="ToolBox">TOOLBOX</button>
+        <button id="missions-btn" data-i18n="nav.missions" aria-label="Missions">MISSIONS</button>
+        <button id="tracker-btn" data-i18n="nav.tracker" aria-label="Satellite & debris tracker">TRACKER</button>
+      </nav>
+    </div>
+    <div class="hdr-right">
+      <button id="cmdk-btn" class="hdr-search" aria-label="Search (press /)">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4 14 14" /></svg>
+        <span data-i18n="search.hint">Search objects, dates, NORAD</span>
+        <kbd>/</kbd>
+      </button>
+      <button id="menu-btn" aria-label="Display settings">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" /><path class="k" d="M5 2.5v3M10.5 6.5v3M7 10.5v3" /></svg>
+      </button>
+    </div>
+  </header>
+  <aside id="toolbox" class="hidden"></aside>
+  <section id="spherex-lab" class="hidden" role="dialog" aria-label="SPHEREx и Planet X Лаборатория"></section>
+  <div id="scope-hud" class="hidden" aria-hidden="true">
+    <div class="scope-frame">
+      <span class="scope-top">SPHEREx FOV · 11.3° × 3.5° · <b id="scope-band">RGB-ИК</b></span>
+      <span class="scope-cross"></span>
+      <button type="button" id="scope-exit" data-i18n="scope.exit">Exit telescope view</button>
+    </div>
+  </div>
+  <nav id="menu" class="hidden" aria-label="Display settings">
+    <div class="mn-head"><span data-i18n="menu.title">DISPLAY SETTINGS</span></div>
+    <div class="mn-sec" data-i18n="menu.scene">SCENE</div>
+    <label><input type="checkbox" id="opt-orbits" checked /> <span data-i18n="menu.orbits">Orbits</span></label>
+    <label><input type="checkbox" id="opt-labels" checked /> <span data-i18n="menu.labels">Object labels</span></label>
+    <label><input type="checkbox" id="opt-tracks" /> <span data-i18n="menu.tracks">Spacecraft trajectories</span></label>
+    <div class="mn-sec">SPHEREx</div>
+    <label><input type="checkbox" id="opt-irsky" /> <span data-i18n="menu.irsky">IR background in 3D</span><em>illustration</em></label>
+    <label><input type="checkbox" id="opt-scancone" checked /> <span data-i18n="menu.scancone">Scan cone</span></label>
+    <div class="mn-sec" data-i18n="menu.lighting">LIGHTING</div>
+    <label><input type="checkbox" id="opt-flood" /> <span data-i18n="menu.flood">Flood light</span><em>flood</em></label>
+    <div class="mn-sec" data-i18n="menu.project">PROJECT</div>
+    <button type="button" class="mn-about" id="about-btn" data-i18n="menu.about">About · data · credits</button>
+    <div class="mn-sec" data-i18n="menu.lang">LANGUAGE</div>
+    <div class="mn-lang">
+      <button type="button" class="mn-lang-btn active" data-lang-btn="en" id="lang-en-btn">EN English</button>
+      <button type="button" class="mn-lang-btn" data-lang-btn="ru" id="lang-ru-btn">RU Русский</button>
+    </div>
+    <div class="mn-sec" data-i18n="menu.keys">KEYBOARD</div>
+    <div class="mn-keys">
+      <span><kbd>/</kbd> <span data-i18n="menu.key-search">search</span></span><span><kbd>Space</kbd> <span data-i18n="menu.key-pause">pause</span></span><span><kbd>Esc</kbd> <span data-i18n="menu.key-esc">close</span></span>
+    </div>
+    <datalist id="search-list"></datalist>
+  </nav>
+  <div id="cmdk" class="hidden" role="dialog" aria-label="Поиск">
+    <div class="ck-box">
+      <div class="ck-input">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6" /><path d="M10.4 10.4 14 14" /></svg>
+        <input id="cmdk-input" data-i18n="search.placeholder" data-i18n-attr="placeholder" placeholder="Planet, satellite, spacecraft, NORAD ID or date YYYY-MM-DD" autocomplete="off" spellcheck="false" />
+        <kbd>Esc</kbd>
+      </div>
+      <ul id="cmdk-list" role="listbox"></ul>
+      <div class="ck-foot"><span><kbd>↑</kbd><kbd>↓</kbd> выбор</span><span><kbd>Enter</kbd> перейти</span><span id="cmdk-count"></span></div>
+    </div>
+  </div>
+  <aside id="info" class="hidden"></aside>
+  <section id="events" class="hidden"><button id="events-toggle" aria-expanded="true"><span>ИСТОРИИ</span><b id="events-count"></b><i></i></button><div id="event-cards"></div></section>
+  <section id="story" class="hidden"></section>
+  <footer id="timeline">
+    <div class="tl-time">
+      <div id="date"></div>
+      <div id="clocktime"></div>
+    </div>
+    <div class="tl-controls">
+      <div class="tl-group" aria-label="Назад">
+        <button data-rate="-31557600" data-i18n="tl.btn-year-back" data-i18n-attr="title" title="Back: 1 year per second"><i><svg viewBox="0 0 16 16"><path d="M3 3v10M13 4 8 8l5 4M8.5 4 3.5 8l5 4" /></svg></i><span data-i18n="tl.year">year</span></button>
+        <button data-rate="-86400" data-i18n="tl.btn-day-back" data-i18n-attr="title" title="Back: 1 day per second"><i><svg viewBox="0 0 16 16"><path d="M10 4 6 8l4 4" /></svg></i><span data-i18n="tl.day">day</span></button>
+      </div>
+      <button id="pause" class="tl-play" data-i18n="tl.pause" data-i18n-attr="title" title="Pause / resume (space)" aria-label="Pause"><svg viewBox="0 0 16 16"><path d="M5.5 3.5v9M10.5 3.5v9" /></svg></button>
+      <div class="tl-group" aria-label="Forward">
+        <button data-rate="1" data-i18n="tl.btn-real" data-i18n-attr="title" title="Real time"><i class="tl-x">1×</i><span data-i18n="tl.real">live</span></button>
+        <button data-rate="3600" data-i18n="tl.btn-hour" data-i18n-attr="title" title="1 hour per second"><i><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" /></svg></i><span data-i18n="tl.hour">hour</span></button>
+        <button data-rate="86400" data-i18n="tl.btn-day" data-i18n-attr="title" title="1 day per second"><i><svg viewBox="0 0 16 16"><path d="M4 4l4 4-4 4M8.5 4l4 4-4 4" /></svg></i><span data-i18n="tl.day">day</span></button>
+        <button data-rate="2629800" data-i18n="tl.btn-month" data-i18n-attr="title" title="1 month per second"><i><svg viewBox="0 0 16 16"><path d="M2 4l4 4-4 4M6.5 4l4 4-4 4M11 4l4 4-4 4" /></svg></i><span data-i18n="tl.month">mo</span></button>
+        <button data-rate="31557600" data-i18n="tl.btn-year" data-i18n-attr="title" title="1 year per second"><i><svg viewBox="0 0 16 16"><path d="M3 4l5 4-5 4M7.5 4l5 4-5 4M13 3v10" /></svg></i><span data-i18n="tl.year">year</span></button>
+      </div>
+    </div>
+    <div class="tl-side">
+      <span id="rate" aria-hidden="true"></span>
+      <button id="live" data-i18n="tl.live" data-i18n-attr="title" title="Jump to current moment" aria-label="Current moment"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.6"/></svg></button>
+    </div>
+  </footer>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

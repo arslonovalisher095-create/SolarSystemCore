@@ -1,0 +1,242 @@
+/* Трекер орбитальных объектов — пристыкованная консоль слева */
+#tracker.trk {
+  position: fixed; z-index: 30; left: 0; top: var(--header-h, 56px); bottom: var(--timeline-h, 76px);
+  width: min(560px, 100vw); display: flex; flex-direction: column;
+  background: var(--panel-solid); border-right: 1px solid var(--line); color: var(--text);
+  font: 13px/1.4 var(--f-sans);
+}
+#tracker.trk.hidden { display: none; }
+#tracker .trk-head { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
+#tracker .trk-title { display: flex; flex-direction: column; gap: 4px; }
+#tracker .trk-title strong { font-weight: 500; font-size: 17px; letter-spacing: .01em; }
+#tracker .trk-x { background: none; border: 1px solid transparent; color: var(--dim); width: 28px; height: 28px; display: grid; place-items: center; cursor: pointer; border-radius: var(--r); }
+#tracker .trk-x:hover { color: var(--text); border-color: var(--line-2); }
+#tracker svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+#tracker .trk-src { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid var(--line); font-size: 11.5px; color: var(--dim); }
+#tracker .trk-src > span:nth-child(2) { flex: 1; }
+#tracker .trk-src b { color: var(--text-2); font-weight: 500; }
+#tracker .dot { width: 6px; height: 6px; background: var(--faint); }
+#tracker .dot.live { background: var(--c-ok); }
+#tracker .ui-btn.sm { height: 24px; padding: 0 8px; font-size: 10px; }
+#tracker .trk-tabs { padding: 0 6px; }
+#tracker .trk-body { flex: 1; overflow-y: auto; padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+
+/* KPI */
+#tracker .trk-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+#tracker .kpi { display: grid; grid-template-columns: 8px 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; text-align: left;
+  background: var(--panel-solid); border: 0; padding: 9px 10px; color: var(--text); cursor: pointer; }
+#tracker .kpi i { width: 8px; height: 8px; grid-row: 1; }
+#tracker .kpi .ui-micro { grid-column: 2; font-size: 9px; letter-spacing: .14em; }
+#tracker .kpi b { grid-column: 2; font-size: 19px; font-weight: 400; }
+#tracker .kpi:hover { background: var(--panel-raise); }
+#tracker .kpi.off { opacity: .38; }
+
+#tracker .trk-sec { display: flex; flex-direction: column; gap: 6px; }
+#tracker .trk-sec-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+#tracker canvas { width: 100%; display: block; background: #07090c; border: 1px solid var(--line); }
+#tracker .trk-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 10.5px; color: var(--dim); }
+#tracker .trk-legend i, #tracker .tags i, #tracker .cl i, #tracker .chip i, #tracker .trk-conj i, #tracker .trk-sbrow i { display: inline-block; width: 7px; height: 7px; margin-right: 6px; vertical-align: 1px; }
+#tracker .trk-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+#tracker .trk-note { margin: 0; font-size: 11.5px; color: var(--dim); line-height: 1.5; }
+#tracker .warn { color: var(--accent) !important; }
+
+/* Каталог */
+#tracker .trk-filters { display: flex; flex-direction: column; gap: 8px; }
+#tracker .trk-filters .ui-input { width: 100%; box-sizing: border-box; }
+#tracker .chips { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+#tracker .chips .sep { width: 1px; height: 18px; background: var(--line-2); margin: 0 4px; }
+#tracker .chip { height: 24px; padding: 0 8px; border: 1px solid var(--line-2); background: transparent; color: var(--faint);
+  font: 600 10px/1 var(--f-sans); letter-spacing: .12em; cursor: pointer; border-radius: var(--r); }
+#tracker .chip.on { color: var(--text); border-color: var(--line-3); background: var(--panel-raise); }
+#tracker .row { display: flex; gap: 10px; align-items: center; }
+#tracker .row select { flex: 1; }
+#tracker .chk { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-2); cursor: pointer; white-space: nowrap; }
+#tracker .chk input { position: absolute; opacity: 0; pointer-events: none; }
+#tracker .chk span { width: 12px; height: 12px; border: 1px solid var(--line-3); display: inline-block; }
+#tracker .chk input:checked + span { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--panel-solid); }
+#tracker .trk-table-h, #tracker .trk-row { display: grid; grid-template-columns: 54px 1fr 58px 58px 64px 50px 52px; gap: 6px; align-items: center; }
+#tracker .trk-table-h { border-bottom: 1px solid var(--line); padding: 0 6px 6px; }
+#tracker .trk-table-h button { background: none; border: 0; padding: 0; text-align: left; color: var(--faint); font: 600 9px/1 var(--f-sans); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+#tracker .trk-table-h button:nth-child(n+4) { text-align: right; }
+#tracker .trk-table-h button.on { color: var(--accent); }
+#tracker .trk-list { position: relative; flex: 1; min-height: 240px; overflow-y: auto; margin-top: -8px; }
+#tracker .trk-rows { position: absolute; inset: 0 0 auto 0; }
+#tracker .trk-row { position: absolute; left: 0; right: 0; height: 26px; padding: 0 6px; background: none; border: 0; border-bottom: 1px solid #10151a;
+  color: var(--text-2); font: 12px var(--f-sans); text-align: left; cursor: pointer; }
+#tracker .trk-row:hover { background: var(--panel-raise); color: var(--text); }
+#tracker .trk-row.on { background: var(--accent-dim); color: var(--text); box-shadow: inset 2px 0 0 var(--accent); }
+#tracker .trk-row .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#tracker .trk-row .cl { font: 600 9.5px var(--f-sans); letter-spacing: .1em; color: var(--dim); }
+#tracker .trk-row .r { text-align: right; font-size: 11.5px; }
+#tracker .trk-row .ui-num:first-child { color: var(--faint); font-size: 11px; }
+#tracker .trk-foot { padding-top: 6px; border-top: 1px solid var(--line); }
+#tracker .trk-body:has(#trk-list) { padding-bottom: 10px; }
+
+/* События */
+#tracker .trk-events { display: flex; flex-direction: column; gap: 10px; }
+#tracker .trk-ev { border: 1px solid var(--line); padding: 12px 12px 10px; display: flex; flex-direction: column; gap: 8px; }
+#tracker .trk-ev.on { border-color: var(--accent); }
+#tracker .trk-ev-h { display: flex; justify-content: space-between; align-items: baseline; }
+#tracker .trk-ev-h strong { font-weight: 500; font-size: 14px; }
+#tracker .trk-ev-h .ui-num { color: var(--dim); font-size: 11px; }
+#tracker .trk-ev p { margin: 0; font-size: 12px; color: var(--text-2); line-height: 1.5; }
+#tracker .trk-ev-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+#tracker .trk-ev-stats > span { background: var(--panel-solid); padding: 6px 8px; display: flex; flex-direction: column; gap: 3px; }
+#tracker .trk-ev-stats .ui-micro { font-size: 8.5px; }
+#tracker .trk-ev-stats b { font-weight: 400; font-size: 13px; }
+#tracker .trk-ev-act { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* Объект */
+#tracker .trk-obj-h strong { display: block; font-weight: 500; font-size: 20px; margin: 3px 0 4px; }
+#tracker .tags { font-size: 11.5px; color: var(--dim); }
+#tracker .trk-live td.n { color: var(--text); font-size: 13px; }
+#tracker .trk-alert { border: 1px solid var(--accent); border-left-width: 3px; padding: 8px 10px; font-size: 12px; color: var(--text-2); }
+#tracker .trk-conj tr.click { cursor: pointer; }
+#tracker .trk-conj tr.click:hover td { background: var(--panel-raise); color: var(--text); }
+#tracker .trk-empty { color: var(--text-2); padding: 20px 0; }
+#tracker .trk-empty p { margin: 0 0 8px; }
+
+/* Малые тела */
+#tracker .trk-sblist { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+#tracker .trk-sbrow { display: grid; grid-template-columns: 14px 1fr auto auto auto; gap: 8px; align-items: center; background: none; border: 0; border-bottom: 1px solid #10151a;
+  padding: 6px 4px; color: var(--text-2); text-align: left; cursor: pointer; font: 12.5px var(--f-sans); }
+#tracker .trk-sbrow:hover { background: var(--panel-raise); color: var(--text); }
+#tracker .trk-sbrow .r { font-size: 11px; color: var(--dim); }
+#tracker .trk-sbrow .mdl { color: var(--accent); border: 1px solid var(--accent); padding: 1px 4px; font-size: 8.5px; }
+
+/* Инфопанель выбранного орбитального объекта (#info) */
+.trk-info { display: flex; flex-direction: column; gap: 10px; }
+.trk-info .tags { font-size: 11.5px; color: var(--dim); }
+.trk-info .tags i { display: inline-block; width: 7px; height: 7px; margin-right: 6px; }
+.trk-info .trk-note { margin: 0; font-size: 11px; color: var(--dim); line-height: 1.45; }
+.trk-info .trk-ev-act { display: flex; }
+
+@media (max-width: 700px) {
+  #tracker.trk { top: var(--header-h, 52px); bottom: 0; width: 100vw; border-right: 0; }
+  #tracker .trk-table-h, #tracker .trk-row { grid-template-columns: 48px 1fr 48px 52px 56px; }
+  #tracker .trk-table-h button:nth-child(n+6), #tracker .trk-row > :nth-child(n+6) { display: none; }
+  #tracker .trk-cols { grid-template-columns: 1fr; }
+}
+#tracker .trk-tabs { overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+#tracker .trk-tabs::-webkit-scrollbar { display: none; }
+#tracker .trk-tabs button { flex: 0 0 auto; }
+
+/* ==========================================================================
+   v2 — скруглённая плавающая панель, крупнее и контрастнее
+   ========================================================================== */
+#tracker.trk {
+  left: 14px; top: calc(var(--header-h) + 12px); bottom: calc(var(--timeline-h) + 8px); width: min(580px, calc(100vw - 28px));
+  background: var(--panel); border: 1px solid var(--line-2); border-radius: var(--r-lg); box-shadow: var(--shadow); overflow: hidden;
+  font: 14px/1.4 var(--f-sans);
+}
+#tracker .trk-head { padding: 16px 14px 12px 20px; border-bottom: 0; }
+#tracker .trk-title strong { font: 700 21px/1.15 var(--f-sans); }
+#tracker .trk-x { width: 36px; height: 36px; border-radius: 50%; background: var(--panel-raise); border: 1px solid var(--line-2); color: var(--text-2); }
+#tracker .trk-x:hover { background: var(--panel-hover); color: var(--text); }
+#tracker .trk-src { margin: 0 14px; padding: 9px 10px 9px 14px; border: 1px solid var(--line); border-radius: var(--r-pill); background: #0b1018; font-size: 12.5px; color: var(--text-2); }
+#tracker .dot { display: none; }
+#tracker .ui-btn.sm { min-height: 30px; padding: 0 12px; font-size: 11.5px; border-radius: var(--r-pill); }
+#tracker .trk-tabs { padding: 4px; margin: 12px 14px 4px; }
+#tracker .trk-body { padding: 10px 18px 20px; gap: 16px; }
+#tracker .trk-kpis { gap: 8px; background: none; border: 0; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+#tracker .kpi { border-radius: var(--r); background: var(--panel-raise); border: 1px solid var(--line-2); padding: 12px 14px; row-gap: 4px; }
+#tracker .kpi:hover { background: var(--panel-hover); border-color: var(--line-3); }
+#tracker .kpi i { width: 10px; height: 10px; border-radius: 50%; }
+#tracker .kpi .ui-micro { font-size: 10.5px; letter-spacing: .06em; }
+#tracker .kpi b { font-size: 24px; font-weight: 600; }
+#tracker .kpi.off { opacity: .4; }
+#tracker canvas { border-radius: var(--r); border-color: var(--line-2); background: #070a10; }
+#tracker .trk-legend { font-size: 12px; color: var(--text-2); gap: 6px 14px; }
+#tracker .trk-legend i, #tracker .tags i, #tracker .cl i, #tracker .chip i, #tracker .trk-conj i, #tracker .trk-sbrow i { width: 9px; height: 9px; border-radius: 50%; }
+#tracker .trk-note { font-size: 13px; color: var(--text-2); }
+#tracker .trk-cols .ui-table, #tracker .trk-obj-h + .ui-table, #tracker .trk-live, #tracker .trk-conj { background: #0d121a; border: 1px solid var(--line); border-radius: var(--r); border-collapse: separate; border-spacing: 0; overflow: hidden; }
+#tracker .ui-table { background: #0d121a; border: 1px solid var(--line); border-radius: var(--r); border-collapse: separate; border-spacing: 0; overflow: hidden; }
+#tracker .chips { gap: 6px; }
+#tracker .chip { height: 32px; padding: 0 13px; border-radius: var(--r-pill); background: var(--panel-raise); border-color: var(--line-2); color: var(--dim); font: 700 11.5px/1 var(--f-sans); letter-spacing: .06em; }
+#tracker .chip.on { color: var(--text); background: var(--accent-dim); border-color: var(--accent-line); }
+#tracker .chip:hover { border-color: var(--line-3); color: var(--text); }
+#tracker .chk { font-size: 13px; gap: 9px; }
+#tracker .chk span { width: 18px; height: 18px; border-radius: 6px; border-width: 1.5px; }
+#tracker .chk input:checked + span { box-shadow: inset 0 0 0 3px var(--panel); }
+#tracker select.ui-input { appearance: auto; }
+#tracker .trk-table-h { padding: 0 10px 8px; }
+#tracker .trk-table-h button { font: 700 10.5px/1 var(--f-sans); letter-spacing: .08em; color: var(--dim); }
+#tracker .trk-list { margin-top: -6px; }
+#tracker .trk-row { height: 30px; padding: 0 10px; border-radius: 8px; border-bottom: 0; font-size: 13.5px; color: var(--text-2); }
+#tracker .trk-row:hover { background: var(--panel-raise); }
+#tracker .trk-row.on { background: var(--accent-dim); box-shadow: inset 0 0 0 1px var(--accent-line); }
+#tracker .trk-row .cl { font-size: 10.5px; }
+#tracker .trk-row .r { font-size: 12.5px; }
+#tracker .trk-foot { font-size: 11.5px; letter-spacing: .04em; }
+#tracker .trk-ev { border-radius: 14px; background: var(--panel-raise); border-color: var(--line-2); padding: 16px; gap: 10px; }
+#tracker .trk-ev.on { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-line); }
+#tracker .trk-ev-h strong { font-size: 17px; font-weight: 700; }
+#tracker .trk-ev-h .ui-num { font-size: 12.5px; padding: 4px 9px; background: #0b1018; border-radius: var(--r-pill); }
+#tracker .trk-ev p { font-size: 13.5px; }
+#tracker .trk-ev-stats { gap: 6px; background: none; border: 0; }
+#tracker .trk-ev-stats > span { background: #0b1018; border: 1px solid var(--line); border-radius: var(--r); padding: 9px 11px; gap: 5px; }
+#tracker .trk-ev-stats .ui-micro { font-size: 10px; letter-spacing: .06em; }
+#tracker .trk-ev-stats b { font-size: 15px; font-weight: 600; }
+#tracker .trk-obj-h strong { font-size: 24px; font-weight: 700; }
+#tracker .tags { font-size: 13px; color: var(--text-2); }
+#tracker .trk-live td.n { font-size: 15px; font-weight: 600; }
+#tracker .trk-alert { border-radius: var(--r); border-left-width: 1px; background: var(--accent-dim); border-color: var(--accent-line); font-size: 13.5px; color: var(--text); padding: 11px 14px; }
+#tracker .trk-sblist { border-top: 0; gap: 2px; }
+#tracker .trk-sbrow { border-bottom: 0; border-radius: 8px; padding: 8px 10px; font-size: 13.5px; }
+#tracker .trk-sbrow .mdl { border-radius: var(--r-pill); padding: 2px 7px; font-size: 10px; }
+.trk-info .tags { font-size: 13px; color: var(--text-2); }
+.trk-info .trk-note { font-size: 12.5px; color: var(--text-2); }
+.trk-info .ui-table { background: #0d121a; border: 1px solid var(--line); border-radius: var(--r); border-collapse: separate; border-spacing: 0; overflow: hidden; }
+@media (max-width: 700px) {
+  #tracker.trk { left: 8px; right: 8px; width: auto; top: calc(var(--header-h) + 8px); bottom: 8px; }
+  #tracker .trk-src { flex-wrap: wrap; border-radius: var(--r); }
+  #tracker .trk-kpis { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---- Индикаторы опасности запуска ---- */
+.dot-danger {
+  display: inline-block;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #ff1a1a;
+  box-shadow: 0 0 5px 2px rgba(255,26,26,0.7);
+  flex-shrink: 0;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.dot-danger.med { background: #ff5533; box-shadow: 0 0 5px 2px rgba(255,85,51,0.6); }
+.dot-danger.low { background: #ff8844; box-shadow: 0 0 5px 2px rgba(255,136,68,0.5); }
+.dot-danger.sm  { width: 7px; height: 7px; }
+
+/* Панель опасности на обзоре */
+.trk-danger-panel { background: rgba(255,26,26,0.04); border: 1px solid rgba(255,26,26,0.18) !important; border-radius: 12px; }
+.trk-danger-kpis { display: flex; gap: 10px; flex-wrap: wrap; }
+.trk-danger-kpi  { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,26,26,0.15); flex: 1; min-width: 70px; }
+.trk-danger-kpi.crit { border-color: rgba(255,26,26,0.4); }
+.trk-danger-kpi.med  { border-color: rgba(255,85,51,0.3); }
+.trk-danger-kpi.total { border-color: rgba(255,255,255,0.1); }
+.trk-danger-kpi b { font-size: 20px; font-weight: 600; color: #ff4444; display: block; }
+.trk-danger-kpi.low b { color: #ff8844; }
+.trk-danger-kpi.med b { color: #ff5533; }
+.trk-danger-kpi.total b { color: var(--text); }
+.trk-danger-kpi .ui-micro { font-size: 10px; letter-spacing: .06em; color: var(--dim); display: block; }
+.trk-danger-note { font-size: 12px; color: rgba(255,100,100,0.75); margin: 0; }
+
+/* Алерт опасности в карточке объекта */
+.trk-danger-alert {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 13px; border-radius: 10px;
+  background: rgba(255,26,26,0.07);
+  border: 1px solid rgba(255,26,26,0.3);
+  margin-bottom: 8px;
+}
+.trk-danger-alert b { font-size: 13px; font-weight: 700; display: block; margin-bottom: 4px; }
+.trk-danger-alert p { font-size: 12px; color: var(--text-2); margin: 0; }
+.trk-danger-alert .dot-danger { margin-top: 2px; }
+
+/* Строки опасных объектов в каталоге */
+#tracker .trk-row-danger { border-left: 2px solid rgba(255,26,26,0.5); }
+#tracker .trk-row-danger:hover { background: rgba(255,26,26,0.07); }
+
+/* Метка в трк-таблице */
+#tracker .trk-sec .ui-table td.n[style*="color:"] { font-weight: 600; }

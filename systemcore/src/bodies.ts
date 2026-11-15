@@ -1,0 +1,75 @@
+// Физические параметры: NASA NSSDCA Planetary Fact Sheets и JPL SSD Physical Parameters (public domain).
+import { Body } from 'astronomy-engine';
+
+export type Kind = 'star' | 'planet' | 'dwarf' | 'moon' | 'spacecraft' | 'satellite' | 'smallbody';
+
+export interface BodyDef {
+  id: string;
+  name: string;
+  kind: Kind;
+  parent?: string;        // id родителя (для лун)
+  astro?: Body;           // тело в astronomy-engine
+  massKg?: number;
+  radiusKm: number;
+  orbitDays?: number;     // сидерический период обращения
+  dayHours?: number;      // сидерический период вращения (отрицательный = ретроградный)
+  tiltDeg?: number;       // наклон оси
+  color: string;          // цвет орбиты и шара-заглушки
+  texture?: string;       // public/textures/<file>, если файл есть
+  description: string;
+  /** Приближённая круговая орбита вокруг родителя (для спутников, которых нет в astronomy-engine) */
+  kepler?: { aKm: number; periodDays: number; poleRaDeg: number; poleDecDeg: number; phaseDeg: number; retro?: boolean };
+  agency?: string;        // для аппаратов
+  launch?: string;        // дата запуска
+}
+
+export const BODIES: BodyDef[] = [
+  { id: 'sun', name: 'Sun', kind: 'star', astro: Body.Sun, massKg: 1.989e30, radiusKm: 695700, dayHours: 609.12, tiltDeg: 7.25, color: '#ffd36b', texture: 'sunmap.jpg', description: 'Звезда в центре Солнечной системы. На неё приходится 99,86% массы системы.' },
+  { id: 'mercury', name: 'Mercury', kind: 'planet', astro: Body.Mercury, massKg: 3.301e23, radiusKm: 2439.7, orbitDays: 87.969, dayHours: 1407.6, tiltDeg: 0.034, color: '#9b8fd6', texture: 'mercury.png', description: 'Самая маленькая планета и ближайшая к Солнцу.' },
+  { id: 'venus', name: 'Venus', kind: 'planet', astro: Body.Venus, massKg: 4.867e24, radiusKm: 6051.8, orbitDays: 224.701, dayHours: -5832.5, tiltDeg: 177.4, color: '#e0a84a', texture: 'venus.png', description: 'Самая горячая планета: плотная атмосфера из CO₂ создаёт сильнейший парниковый эффект.' },
+  { id: 'earth', name: 'Earth', kind: 'planet', astro: Body.Earth, massKg: 5.972e24, radiusKm: 6371.0, orbitDays: 365.256, dayHours: 23.9345, tiltDeg: 23.44, color: '#3fa9f5', texture: 'earth_atmos_2048.jpg', description: 'Наш дом и единственная известная планета с жизнью.' },
+  { id: 'moon', name: 'Moon', kind: 'moon', parent: 'earth', astro: Body.Moon, massKg: 7.346e22, radiusKm: 1737.4, orbitDays: 27.3217, dayHours: 655.7, tiltDeg: 6.68, color: '#bbbbbb', texture: 'moon.png', description: 'Единственный естественный спутник Земли.' },
+  { id: 'mars', name: 'Mars', kind: 'planet', astro: Body.Mars, massKg: 6.417e23, radiusKm: 3389.5, orbitDays: 686.98, dayHours: 24.6229, tiltDeg: 25.19, color: '#e2643a', texture: 'mars.png', description: 'Красная планета с крупнейшим вулканом Солнечной системы, горой Олимп.' },
+  { id: 'jupiter', name: 'Jupiter', kind: 'planet', astro: Body.Jupiter, massKg: 1.898e27, radiusKm: 69911, orbitDays: 4332.59, dayHours: 9.925, tiltDeg: 3.13, color: '#d9a066', texture: 'jupiter.png', description: 'Крупнейшая планета, газовый гигант с Большим красным пятном.' },
+  { id: 'io', name: 'Io', kind: 'moon', parent: 'jupiter', massKg: 8.932e22, radiusKm: 1821.6, orbitDays: 1.769, color: '#e8d66b', texture: 'io.png', description: 'Самое вулканически активное тело Солнечной системы.' },
+  { id: 'europa', name: 'Europa', kind: 'moon', parent: 'jupiter', massKg: 4.8e22, radiusKm: 1560.8, orbitDays: 3.551, color: '#c9b79c', texture: 'europa.png', description: 'Ледяная луна, под корой которой скрыт подлёдный океан.' },
+  { id: 'ganymede', name: 'Ganymede', kind: 'moon', parent: 'jupiter', massKg: 1.4819e23, radiusKm: 2634.1, orbitDays: 7.155, color: '#a39a8c', texture: 'ganymede.png', description: 'Крупнейший спутник в Солнечной системе.' },
+  { id: 'callisto', name: 'Callisto', kind: 'moon', parent: 'jupiter', massKg: 1.0759e23, radiusKm: 2410.3, orbitDays: 16.689, color: '#7d7468', texture: 'callisto.png', description: 'Одно из самых кратерированных тел Солнечной системы.' },
+  { id: 'saturn', name: 'Saturn', kind: 'planet', astro: Body.Saturn, massKg: 5.683e26, radiusKm: 58232, orbitDays: 10759.22, dayHours: 10.656, tiltDeg: 26.73, color: '#e8cf8f', texture: 'saturn.png', description: 'Газовый гигант с самой заметной системой колец.' },
+  { id: 'uranus', name: 'Uranus', kind: 'planet', astro: Body.Uranus, massKg: 8.681e25, radiusKm: 25362, orbitDays: 30685.4, dayHours: -17.24, tiltDeg: 97.77, color: '#8fd8e0', texture: 'uranus.png', description: 'Ледяной гигант, вращающийся «лёжа на боку».' },
+  { id: 'neptune', name: 'Neptune', kind: 'planet', astro: Body.Neptune, massKg: 1.024e26, radiusKm: 24622, orbitDays: 60189, dayHours: 16.11, tiltDeg: 28.32, color: '#4f6fe8', texture: 'neptune.png', description: 'Самая далёкая планета, на ней самые быстрые ветра в системе.' },
+  { id: 'pluto', name: 'Pluto', kind: 'dwarf', astro: Body.Pluto, massKg: 1.303e22, radiusKm: 1188.3, orbitDays: 90560, dayHours: -153.29, tiltDeg: 122.53, color: '#b08f74', texture: 'pluto.png', description: 'Карликовая планета в поясе Койпера. Её изучил New Horizons в 2015 году.' },
+  { id: 'phobos', name: 'Phobos', kind: 'moon', parent: 'mars', massKg: 1.0659e16, radiusKm: 11.1, orbitDays: 0.31891, dayHours: 7.654, tiltDeg: 0, color: '#8a7d72', texture: 'phobos.png', description: 'Ближайший и самый крупный спутник Марса. Медленно приближается к планете и через десятки миллионов лет разрушится.', kepler: { aKm: 9376, periodDays: 0.31891, poleRaDeg: 317.68, poleDecDeg: 52.89, phaseDeg: 20 } },
+  { id: 'deimos', name: 'Deimos', kind: 'moon', parent: 'mars', massKg: 1.4762e15, radiusKm: 6.2, orbitDays: 1.263, dayHours: 30.312, tiltDeg: 0, color: '#9a8f84', texture: 'deimos.png', description: 'Маленький и дальний спутник Марса неправильной формы.', kepler: { aKm: 23463, periodDays: 1.263, poleRaDeg: 317.68, poleDecDeg: 52.89, phaseDeg: 200 } },
+  { id: 'mimas', name: 'Mimas', kind: 'moon', parent: 'saturn', massKg: 3.7493e19, radiusKm: 198.2, orbitDays: 0.942, dayHours: 22.608, tiltDeg: 0, color: '#b9b9b9', texture: 'mimas.png', description: 'Спутник Сатурна с огромным кратером Гершель — он похож на «Звезду смерти».', kepler: { aKm: 185540, periodDays: 0.942, poleRaDeg: 40.59, poleDecDeg: 83.54, phaseDeg: 10 } },
+  { id: 'enceladus', name: 'Enceladus', kind: 'moon', parent: 'saturn', massKg: 1.08e20, radiusKm: 252.1, orbitDays: 1.37, dayHours: 32.88, tiltDeg: 0, color: '#f2f6fa', texture: 'enceladus.png', description: 'Ледяной спутник Сатурна: гейзеры у южного полюса выбрасывают воду в космос, под льдом — океан.', kepler: { aKm: 238040, periodDays: 1.37, poleRaDeg: 40.59, poleDecDeg: 83.54, phaseDeg: 80 } },
+  { id: 'tethys', name: 'Tethys', kind: 'moon', parent: 'saturn', massKg: 6.17e20, radiusKm: 531.1, orbitDays: 1.888, dayHours: 45.312, tiltDeg: 0, color: '#d8d8d4', texture: 'tethys.png', description: 'Почти целиком из водяного льда, с гигантской долиной Итака.', kepler: { aKm: 294670, periodDays: 1.888, poleRaDeg: 40.59, poleDecDeg: 83.54, phaseDeg: 150 } },
+  { id: 'dione', name: 'Dione', kind: 'moon', parent: 'saturn', massKg: 1.0955e21, radiusKm: 561.4, orbitDays: 2.737, dayHours: 65.688, tiltDeg: 0, color: '#cfcfca', texture: 'dione.png', description: 'Ледяной спутник Сатурна со светлыми ледяными обрывами на тёмной поверхности.', kepler: { aKm: 377420, periodDays: 2.737, poleRaDeg: 40.59, poleDecDeg: 83.54, phaseDeg: 230 } },
+  { id: 'rhea', name: 'Rhea', kind: 'moon', parent: 'saturn', massKg: 2.3065e21, radiusKm: 763.8, orbitDays: 4.518, dayHours: 108.432, tiltDeg: 0, color: '#c4c2bc', texture: 'rhea.png', description: 'Второй по величине спутник Сатурна, ледяной и сильно кратерированный.', kepler: { aKm: 527070, periodDays: 4.518, poleRaDeg: 40.59, poleDecDeg: 83.54, phaseDeg: 300 } },
+  { id: 'titan', name: 'Titan', kind: 'moon', parent: 'saturn', massKg: 1.3452e23, radiusKm: 2574.7, orbitDays: 15.945, dayHours: 382.68, tiltDeg: 0, color: '#d9a548', texture: 'titan.png', description: 'Крупнейший спутник Сатурна, единственный в системе с плотной атмосферой. На поверхности — озёра метана и этана.', kepler: { aKm: 1221870, periodDays: 15.945, poleRaDeg: 40.59, poleDecDeg: 83.54, phaseDeg: 40 } },
+  { id: 'iapetus', name: 'Iapetus', kind: 'moon', parent: 'saturn', massKg: 1.806e21, radiusKm: 734.5, orbitDays: 79.33, dayHours: 1903.92, tiltDeg: 0, color: '#8c8478', texture: 'iapetus.png', description: 'Спутник с двумя «лицами»: одно полушарие тёмное, другое светлое, вдоль экватора тянется горный хребет.', kepler: { aKm: 3560840, periodDays: 79.33, poleRaDeg: 40.59, poleDecDeg: 83.54, phaseDeg: 120 } },
+  { id: 'miranda', name: 'Miranda', kind: 'moon', parent: 'uranus', massKg: 6.59e19, radiusKm: 235.8, orbitDays: 1.413, dayHours: 33.912, tiltDeg: 0, color: '#a9a9a9', texture: 'miranda.png', description: 'Спутник Урана с самым причудливым рельефом: каньоны глубиной до 20 км.', kepler: { aKm: 129900, periodDays: 1.413, poleRaDeg: 257.31, poleDecDeg: -15.18, phaseDeg: 60 } },
+  { id: 'ariel', name: 'Ariel', kind: 'moon', parent: 'uranus', massKg: 1.251e21, radiusKm: 578.9, orbitDays: 2.52, dayHours: 60.48, tiltDeg: 0, color: '#bdbdbd', texture: 'ariel.png', description: 'Один из самых ярких спутников Урана с глубокими долинами.', kepler: { aKm: 190900, periodDays: 2.52, poleRaDeg: 257.31, poleDecDeg: -15.18, phaseDeg: 140 } },
+  { id: 'umbriel', name: 'Umbriel', kind: 'moon', parent: 'uranus', massKg: 1.275e21, radiusKm: 584.7, orbitDays: 4.144, dayHours: 99.456, tiltDeg: 0, color: '#6f6f6f', texture: 'umbriel.png', description: 'Тёмный спутник Урана со светлым кольцом на кратере Вунда.', kepler: { aKm: 266000, periodDays: 4.144, poleRaDeg: 257.31, poleDecDeg: -15.18, phaseDeg: 220 } },
+  { id: 'titania', name: 'Titania', kind: 'moon', parent: 'uranus', massKg: 3.4e21, radiusKm: 788.4, orbitDays: 8.706, dayHours: 208.944, tiltDeg: 0, color: '#a8a49e', texture: 'titania.png', description: 'Крупнейший спутник Урана.', kepler: { aKm: 436300, periodDays: 8.706, poleRaDeg: 257.31, poleDecDeg: -15.18, phaseDeg: 300 } },
+  { id: 'oberon', name: 'Oberon', kind: 'moon', parent: 'uranus', massKg: 3.076e21, radiusKm: 761.4, orbitDays: 13.463, dayHours: 323.112, tiltDeg: 0, color: '#8f8a84', texture: 'oberon.png', description: 'Дальний крупный спутник Урана с тёмными пятнами на дне кратеров.', kepler: { aKm: 583500, periodDays: 13.463, poleRaDeg: 257.31, poleDecDeg: -15.18, phaseDeg: 20 } },
+  { id: 'triton', name: 'Triton', kind: 'moon', parent: 'neptune', massKg: 2.139e22, radiusKm: 1353.4, orbitDays: 5.877, dayHours: -141.048, tiltDeg: 0, color: '#cdbfb4', texture: 'triton.png', description: 'Крупнейший спутник Нептуна. Обращается в обратную сторону — вероятно, это захваченный объект из пояса Койпера. Есть ледяные гейзеры.', kepler: { aKm: 354759, periodDays: 5.877, poleRaDeg: 299.36, poleDecDeg: 43.46, phaseDeg: 100, retro: true } },
+  { id: 'charon', name: 'Charon', kind: 'moon', parent: 'pluto', massKg: 1.586e21, radiusKm: 606, orbitDays: 6.387, dayHours: 153.288, tiltDeg: 0, color: '#8c8782', texture: 'charon.png', description: 'Крупнейший спутник Плутона. Плутон и Харон всегда повёрнуты друг к другу одной стороной.', kepler: { aKm: 19591, periodDays: 6.387, poleRaDeg: 132.99, poleDecDeg: -6.16, phaseDeg: 0 } },
+  { id: 'planet-x', name: 'Planet X', kind: 'dwarf', massKg: 4.5e25, radiusKm: 21000, orbitDays: 2705800, dayHours: 14.5, tiltDeg: 32, color: '#e06cff', description: 'Гипотетическая девятая планета (ледяной гигант ~7.5 M⊕ на вытянутой орбите ~380 а.е.). Почти невидима в оптическом диапазоне, но является одной из главных целей инфракрасного обзора SPHEREx в каналах D5–D6 (3.8–5.0 мкм).' },
+];
+
+// Космические аппараты: траектории из JPL Horizons (scripts/fetch-horizons.mjs → public/data/spacecraft/<id>.json) и живой SGP4 для SPHEREx
+export const SPACECRAFT = [
+  { id: 'spherex', name: 'SPHEREx', horizons: 'NORAD 63182', agency: 'NASA / Caltech', launch: '11 марта 2025', massKg: 502, liveTle: true, parent: 'earth', description: 'Космическая ИК-обсерватория NASA (MIDEX 9) на солнечно-синхронной полярной орбите (~660 км). Сканирует всё небо в 102 спектральных полосах (0.75–5.00 мкм), собирая >14 млрд спектров и помогая искать холодные миры вроде Planet X.' },
+  { id: 'voyager-1', name: 'Voyager 1', horizons: '-31', agency: 'NASA', launch: '5 сентября 1977', massKg: 825.5, description: 'Самый далёкий рукотворный объект. Облетел Юпитер и Сатурн, а с 2012 года работает в межзвёздном пространстве. Несёт «Золотую пластинку» с записями Земли.' },
+  { id: 'voyager-2', name: 'Voyager 2', horizons: '-32', agency: 'NASA', launch: '20 августа 1977', massKg: 825.5, description: 'Единственный аппарат, побывавший у всех четырёх планет-гигантов: Юпитера, Сатурна, Урана и Нептуна. Также вышел в межзвёздное пространство (2018).' },
+  { id: 'pioneer-10', name: 'Pioneer 10', horizons: '-23', agency: 'NASA', launch: '2 марта 1972', massKg: 258, description: 'Первый аппарат, пролетевший через пояс астероидов и первым сфотографировавший Юпитер вблизи (1973). Связь с ним потеряна в 2003 году.' },
+  { id: 'pioneer-11', name: 'Pioneer 11', horizons: '-24', agency: 'NASA', launch: '6 апреля 1973', massKg: 259, description: 'Первый аппарат у Сатурна (1979), после Юпитера. Связь с ним потеряна в 1995 году.' },
+  { id: 'new-horizons', name: 'New Horizons', horizons: '-98', agency: 'NASA', launch: '19 января 2006', massKg: 478, description: 'Первая миссия к Плутону: пролёт 14 июля 2015 года. Затем облетел объект пояса Койпера Аррокот (2019).' },
+  { id: 'parker-solar-probe', name: 'Parker Solar Probe', horizons: '-96', agency: 'NASA', launch: '12 августа 2018', massKg: 685, description: 'Самый близкий к Солнцу аппарат: проходит через корону, защищённый углеродным тепловым щитом. Самый быстрый рукотворный объект.' },
+  { id: 'juno', name: 'Juno', horizons: '-61', agency: 'NASA', launch: '5 августа 2011', massKg: 3625, description: 'Исследует Юпитер с полярной орбиты: магнитное поле, атмосфера, внутреннее строение. Питается от трёх огромных солнечных панелей.' },
+  { id: 'europa-clipper', name: 'Europa Clipper', horizons: '-159', agency: 'NASA', launch: '14 октября 2024', massKg: 6065, description: 'Самый большой аппарат NASA для планетарной миссии. Совершит десятки пролётов у Европы, чтобы изучить подлёдный океан и его обитаемость.' },
+  { id: 'juice', name: 'Juice', horizons: '-28', agency: 'ESA', launch: '14 апреля 2023', massKg: 6070, description: 'Миссия ЕКА к ледяным спутникам Юпитера: Ганимеду, Каллисто и Европе. Станет первым аппаратом на орбите спутника другой планеты.' },
+  { id: 'lucy', name: 'Lucy', horizons: '-49', agency: 'NASA', launch: '16 октября 2021', massKg: 1550, description: 'Первая миссия к троянским астероидам Юпитера. Названа в честь скелета «Люси»: астероиды хранят следы ранней Солнечной системы.' },
+  { id: 'psyche', name: 'Psyche', horizons: '-255', agency: 'NASA', launch: '13 октября 2023', massKg: 2608, description: 'Летит к металлическому астероиду (16) Психея — возможно, ядру несостоявшейся планеты. Пролетел Марс для гравитационного манёвра в мае 2026.' },
+];

@@ -1,0 +1,107 @@
+/* Небо SPHEREx — полноэкранная рабочая область поверх 3D */
+#skyview { position: fixed; z-index: 40; inset: var(--header-h, 56px) 0 0 0; display: flex; flex-direction: column; background: var(--bg); color: var(--text); font: 13px/1.4 var(--f-sans); }
+#skyview.hidden { display: none; }
+#skyview .sv-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+#skyview .sv-head div { display: flex; flex-direction: column; gap: 3px; }
+#skyview .sv-head strong { font-weight: 500; font-size: 16px; }
+#skyview .sv-x { background: none; border: 1px solid transparent; color: var(--dim); width: 30px; height: 30px; display: grid; place-items: center; cursor: pointer; }
+#skyview .sv-x:hover { color: var(--text); border-color: var(--line-2); }
+#skyview svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+#skyview .sv-main { flex: 1; display: grid; grid-template-columns: 300px 1fr; min-height: 0; }
+#skyview .sv-side { border-right: 1px solid var(--line); padding: 12px 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+#skyview .sv-side > .ui-micro { margin-top: 6px; }
+#skyview .sv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+#skyview .sv-grid1 { grid-template-columns: 1fr; }
+#skyview .sv-grid button, #skyview .sv-targets button { background: var(--panel-solid); border: 0; color: var(--text-2); text-align: left; padding: 7px 9px; cursor: pointer; font: 12px var(--f-sans); display: flex; flex-direction: column; gap: 2px; }
+#skyview .sv-grid button small, #skyview .sv-targets button small { font: 10.5px var(--f-mono); color: var(--faint); }
+#skyview .sv-grid button:hover, #skyview .sv-targets button:hover { background: var(--panel-raise); color: var(--text); }
+#skyview .sv-grid button.on, #skyview .sv-targets button.on { color: var(--text); box-shadow: inset 2px 0 0 var(--accent); background: var(--panel-raise); }
+#skyview .sv-modes { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line-2); }
+#skyview .sv-modes button { background: none; border: 0; border-right: 1px solid var(--line-2); color: var(--dim); padding: 7px 4px; font: 600 10px var(--f-sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+#skyview .sv-modes button:last-child { border-right: 0; }
+#skyview .sv-modes button.on { color: var(--accent-ink); background: var(--accent); }
+#skyview .sv-slider { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
+#skyview .sv-slider input { accent-color: var(--accent); width: 100%; }
+#skyview .sv-targets { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+#skyview .sv-goto { display: flex; gap: 6px; margin-top: 4px; }
+#skyview .sv-goto input { flex: 1; min-width: 0; }
+#skyview .sv-view { position: relative; min-height: 0; background: #000; }
+#skyview #sv-aladin { position: absolute; inset: 0; }
+#skyview .sv-badge { position: absolute; left: 12px; top: 12px; z-index: 5; display: flex; gap: 10px; align-items: baseline; background: rgba(5,6,8,.85); border: 1px solid var(--line-2); padding: 6px 10px; pointer-events: none; }
+#skyview .sv-badge b { font-weight: 500; }
+#skyview .sv-badge span { color: var(--accent); font-size: 12px; }
+#skyview .sv-msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 30px; color: var(--text-2); z-index: 6; }
+#skyview .sv-msg.hidden { display: none; }
+#skyview .sv-foot { border-top: 1px solid var(--line); display: grid; grid-template-columns: 1.1fr 1.3fr auto; gap: 18px; padding: 10px 16px; align-items: start; }
+#skyview .sv-f1 strong { font-weight: 500; }
+#skyview .sv-f1 p { margin: 4px 0 0; color: var(--text-2); font-size: 12px; }
+#skyview .sv-f3 { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; max-width: 260px; text-align: right; }
+#skyview .sv-f3 a { text-decoration: none; }
+@media (max-width: 800px) {
+  #skyview .sv-main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  #skyview .sv-side { border-right: 0; border-bottom: 1px solid var(--line); max-height: 38vh; }
+  #skyview .sv-view { min-height: 40vh; }
+  #skyview .sv-foot { grid-template-columns: 1fr; }
+  #skyview .sv-f3 { align-items: flex-start; text-align: left; }
+}
+
+/* О проекте */
+#about { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(0,0,0,.6); padding: 20px; }
+#about.hidden { display: none; }
+#about .ab-box { width: min(780px, 100%); max-height: 86vh; display: flex; flex-direction: column; background: var(--panel-solid); color: var(--text); font: 13px/1.5 var(--f-sans); }
+#about header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+#about header div { display: flex; flex-direction: column; gap: 3px; }
+#about header strong { font-weight: 500; font-size: 18px; }
+#about .ab-x { background: none; border: 0; color: var(--dim); cursor: pointer; width: 30px; height: 30px; }
+#about .ab-x svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+#about .ab-body { overflow-y: auto; padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 16px; }
+#about .ab-lead { margin: 0; font-size: 14px; color: var(--text); border-left: 2px solid var(--accent); padding-left: 10px; }
+#about h3 { margin: 0 0 6px; font: 600 10px var(--f-sans); letter-spacing: .18em; text-transform: uppercase; color: var(--dim); }
+#about p { margin: 0; color: var(--text-2); }
+#about td:first-child { color: var(--dim); width: 38%; vertical-align: top; }
+#about td b { color: var(--text); font-weight: 500; }
+#about .ab-note { margin-top: 8px; font-size: 11.5px; color: var(--faint); }
+#menu .mn-about { background: none; border: 1px solid var(--line-2); color: var(--text-2); text-align: left; padding: 7px 10px; font: 12px var(--f-sans); cursor: pointer; }
+#menu .mn-about:hover { border-color: var(--accent); color: var(--text); }
+
+/* ==========================================================================
+   v2 — скруглённое рабочее окно, крупнее и контрастнее
+   ========================================================================== */
+#skyview { inset: calc(var(--header-h) + 12px) 14px 14px 14px; background: var(--panel); border: 1px solid var(--line-2); border-radius: var(--r-lg); box-shadow: var(--shadow); overflow: hidden; font-size: 14px; }
+#skyview .sv-head { padding: 14px 14px 12px 20px; }
+#skyview .sv-head strong { font: 700 20px/1.15 var(--f-sans); }
+#skyview .sv-x { width: 36px; height: 36px; border-radius: 50%; background: var(--panel-raise); border: 1px solid var(--line-2); color: var(--text-2); }
+#skyview .sv-x:hover { background: var(--panel-hover); color: var(--text); }
+#skyview .sv-main { grid-template-columns: 320px 1fr; }
+#skyview .sv-side { padding: 14px 16px; gap: 10px; }
+#skyview .sv-grid, #skyview .sv-targets { gap: 6px; background: none; border: 0; }
+#skyview .sv-grid button, #skyview .sv-targets button { border-radius: var(--r); background: var(--panel-raise); border: 1px solid var(--line-2); padding: 9px 12px; font: 600 13.5px var(--f-sans); color: var(--text-2); }
+#skyview .sv-grid button small, #skyview .sv-targets button small { font-size: 11.5px; color: var(--dim); }
+#skyview .sv-grid button:hover, #skyview .sv-targets button:hover { background: var(--panel-hover); color: var(--text); }
+#skyview .sv-grid button.on, #skyview .sv-targets button.on { background: var(--accent-dim); border-color: var(--accent-line); box-shadow: none; color: var(--text); }
+#skyview .sv-modes { gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: var(--r-pill); background: #0b1018; }
+#skyview .sv-modes button { border: 0; border-radius: var(--r-pill); padding: 9px 6px; font: 700 11px/1.1 var(--f-sans); color: var(--text-2); }
+#skyview .sv-modes button:hover { background: var(--panel-raise); }
+#skyview .sv-view { margin: 0 12px 0 0; border-radius: var(--r); overflow: hidden; }
+#skyview .sv-badge { border-radius: var(--r-pill); padding: 8px 14px; font-size: 13.5px; }
+#skyview .sv-msg { font-size: 15px; }
+#skyview .sv-foot { padding: 12px 20px; gap: 20px; }
+#skyview .sv-f1 strong { font-size: 16px; font-weight: 700; }
+#skyview .sv-f1 p { font-size: 13.5px; }
+#skyview .sv-f2 { background: #0d121a; border: 1px solid var(--line); border-radius: var(--r); border-collapse: separate; border-spacing: 0; overflow: hidden; }
+#skyview .sv-f3 .ui-micro { font-size: 10.5px; }
+@media (max-width: 800px) {
+  #skyview { inset: calc(var(--header-h) + 8px) 8px 8px 8px; }
+  #skyview .sv-view { margin: 0; border-radius: 0; }
+}
+
+/* О проекте */
+#about .ab-box { border-radius: var(--r-lg); box-shadow: var(--shadow); font-size: 14px; overflow: hidden; }
+#about header { padding: 18px 18px 14px 22px; }
+#about header strong { font-size: 22px; font-weight: 700; }
+#about .ab-x { border-radius: 50%; width: 36px; height: 36px; background: var(--panel-raise); border: 1px solid var(--line-2); }
+#about .ab-body { padding: 16px 22px 22px; gap: 18px; }
+#about .ab-lead { font-size: 15.5px; border-left: 0; padding: 14px 16px; border-radius: var(--r); background: var(--accent-dim); }
+#about h3 { font-size: 12px; letter-spacing: .1em; color: var(--text); margin-bottom: 8px; }
+#about .ui-table { background: #0d121a; border: 1px solid var(--line); border-radius: var(--r); border-collapse: separate; border-spacing: 0; overflow: hidden; }
+#menu .mn-about { border-radius: var(--r); }
